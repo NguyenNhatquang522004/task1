@@ -1,0 +1,86 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Backend Development Server",
+			"type": "shell",
+			"command": "c:/edu/task1/llm-graph-builder/.venv/Scripts/python.exe",
+			"args": [
+				"-m",
+				"uvicorn",
+				"score:app",
+				"--reload",
+				"--host",
+				"0.0.0.0",
+				"--port",
+				"8000"
+			],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"options": {
+				"cwd": "c:/edu/task1/llm-graph-builder/backend"
+			}
+		},
+		{
+			"label": "Run Frontend Development Server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"options": {
+				"cwd": "c:/edu/task1/llm-graph-builder/frontend"
+			}
+		},
+		{
+			"label": "Build Frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"group": "build",
+			"options": {
+				"cwd": "c:/edu/task1/llm-graph-builder/frontend"
+			}
+		},
+		{
+			"label": "Install Backend Dependencies",
+			"type": "shell",
+			"command": "c:/edu/task1/llm-graph-builder/.venv/Scripts/python.exe",
+			"args": [
+				"-m",
+				"pip",
+				"install",
+				"-r",
+				"requirements.txt"
+			],
+			"group": "build",
+			"options": {
+				"cwd": "c:/edu/task1/llm-graph-builder/backend"
+			}
+		},
+		{
+			"label": "Install Frontend Dependencies",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install"
+			],
+			"group": "build",
+			"options": {
+				"cwd": "c:/edu/task1/llm-graph-builder/frontend"
+			}
+		}
+	]
+}
