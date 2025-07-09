@@ -1,0 +1,119 @@
+{
+  "process_summary": {
+    "file_name": "performance_demo.pdf",
+    "model": "gemini-pro",
+    "source_type": "local",
+    "status": "SUCCESS",
+    "duration": "7.13s",
+    "total_steps": 6
+  },
+  "timeline": [
+    {
+      "step": 1,
+      "name": "PROCESS_START",
+      "timestamp": "2025-07-09T06:30:58.273690",
+      "message": "\ud83d\ude80 Starting document processing for: performance_demo.pdf",
+      "elapsed_time": 0.0
+    },
+    {
+      "step": 2,
+      "name": "FAST_OPERATION",
+      "timestamp": "2025-07-09T06:30:58.273690",
+      "message": "Quick data processing",
+      "elapsed_time": 0.0
+    },
+    {
+      "step": 3,
+      "name": "MODERATE_OPERATION",
+      "timestamp": "2025-07-09T06:30:58.378143",
+      "message": "Medium complexity processing",
+      "elapsed_time": 0.10445308685302734
+    },
+    {
+      "step": 4,
+      "name": "SLOW_OPERATION",
+      "timestamp": "2025-07-09T06:31:00.391789",
+      "message": "Complex AI processing",
+      "elapsed_time": 2.118098258972168
+    },
+    {
+      "step": 5,
+      "name": "API_CALL_BOTTLENECK",
+      "timestamp": "2025-07-09T06:31:05.404364",
+      "message": "\u26a0\ufe0f Performance bottleneck detected in API_CALL: TIMEOUT",
+      "elapsed_time": 7.130673885345459
+    },
+    {
+      "step": 6,
+      "name": "PROCESS_END",
+      "timestamp": "2025-07-09T06:31:05.405365",
+      "message": "\u2705 Process completed with status: SUCCESS",
+      "elapsed_time": 7.131674766540527
+    }
+  ],
+  "data_lineage": [],
+  "performance_analysis": {
+    "bottlenecks": [
+      {
+        "step": "API_CALL",
+        "type": "TIMEOUT",
+        "timestamp": "2025-07-09T06:31:05.404364",
+        "details": {
+          "endpoint": "external_api",
+          "timeout_duration": 30,
+          "retry_attempts": 3
+        }
+      }
+    ],
+    "memory_usage": [
+      {
+        "step": "PROCESS_START",
+        "memory_mb": 18.765625,
+        "timestamp": "2025-07-09T06:30:58.273690"
+      },
+      {
+        "step": "FAST_OPERATION",
+        "memory_mb": 18.765625,
+        "timestamp": "2025-07-09T06:30:58.273690"
+      },
+      {
+        "step": "MODERATE_OPERATION",
+        "memory_mb": 18.765625,
+        "timestamp": "2025-07-09T06:30:58.378143"
+      },
+      {
+        "step": "SLOW_OPERATION",
+        "memory_mb": 18.765625,
+        "timestamp": "2025-07-09T06:31:00.391789"
+      },
+      {
+        "step": "API_CALL_BOTTLENECK",
+        "memory_mb": 18.765625,
+        "timestamp": "2025-07-09T06:31:05.404364"
+      },
+      {
+        "step": "PROCESS_END",
+        "memory_mb": 18.765625,
+        "timestamp": "2025-07-09T06:31:05.405365"
+      }
+    ],
+    "processing_speeds": {}
+  },
+  "statistics": {
+    "total_time": 7.131674766540527,
+    "total_steps": 5,
+    "average_step_time": 1.4263349533081056,
+    "step_distribution": {
+      "PROCESS": 1,
+      "FAST": 1,
+      "MODERATE": 1,
+      "SLOW": 1,
+      "API": 1
+    },
+    "error_count": 0,
+    "warning_count": 1,
+    "data_quality_scores": [],
+    "average_data_quality": 1.0
+  },
+  "custom_metrics": []
+}

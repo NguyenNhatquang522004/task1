@@ -379,10 +379,23 @@ export const LLMDropdownLabel = {
   devEnv: 'development environment',
 };
 export const getDefaultSchemaExamples = () => {
-  return schemaExamples.map((example) => ({
+  // Combine both schema files
+  const tripletSchemas = schemaExamples.map((example) => ({
     label: example.schema,
     value: JSON.stringify(example.triplet),
   }));
+  
+  const predefinedSchemas = [
+    { label: 'stackoverflow', value: JSON.stringify(['User-ANSWERED->Question', 'User-POSTED->Question']) },
+    { label: 'movies', value: JSON.stringify(['Actor-ACTED_IN->Movie', 'Director-DIRECTED->Movie']) },
+    { label: 'education', value: JSON.stringify(['Student-ENROLLED_IN->Course', 'Teacher-TEACHES->Course']) },
+    { label: 'corporate', value: JSON.stringify(['Employee-WORKS_FOR->Department', 'Manager-MANAGES->Employee']) },
+    { label: 'crime', value: JSON.stringify(['Person-INVOLVED_IN->Crime', 'Officer-INVESTIGATED_BY->Crime']) },
+    { label: 'healthcare', value: JSON.stringify(['Case-HAS_REACTION->Reaction', 'Drug-PRESCRIBED->Therapy']) },
+    { label: 'book_structure', value: JSON.stringify(['Chapter-CONTAINS->Section', 'Section-PART_OF->Chapter']) }
+  ];
+  
+  return [...tripletSchemas, ...predefinedSchemas];
 };
 
 export function mergeNestedObjects(objects: Record<string, Record<string, number>>[]) {

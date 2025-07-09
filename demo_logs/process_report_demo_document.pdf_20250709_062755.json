@@ -1,0 +1,196 @@
+{
+  "process_summary": {
+    "file_name": "demo_document.pdf",
+    "model": "gemini-pro",
+    "source_type": "local",
+    "status": "SUCCESS",
+    "duration": "1.53s",
+    "total_steps": 8
+  },
+  "timeline": [
+    {
+      "step": 1,
+      "name": "PROCESS_START",
+      "timestamp": "2025-07-09T06:27:54.423451",
+      "message": "\ud83d\ude80 Starting document processing for: demo_document.pdf",
+      "elapsed_time": 0.0
+    },
+    {
+      "step": 2,
+      "name": "DOCUMENT_LOADING",
+      "timestamp": "2025-07-09T06:27:54.447150",
+      "message": "Loading document from file system",
+      "elapsed_time": 0.023698806762695312
+    },
+    {
+      "step": 3,
+      "name": "DOCUMENT_PARSING",
+      "timestamp": "2025-07-09T06:27:55.447817",
+      "message": "Parsing document content",
+      "elapsed_time": 1.0243656635284424
+    },
+    {
+      "step": 4,
+      "name": "CHUNKING_DATA_FLOW",
+      "timestamp": "2025-07-09T06:27:55.957216",
+      "message": "\ud83d\udcca Data flow for CHUNKING - Type change: str -> list",
+      "elapsed_time": 1.5337650775909424
+    },
+    {
+      "step": 5,
+      "name": "CUSTOM_METRIC_TOKENS_PROCESSED",
+      "timestamp": "2025-07-09T06:27:55.957216",
+      "message": "\ud83d\udcc8 Custom metric: tokens_processed = 1250",
+      "elapsed_time": 1.5337650775909424
+    },
+    {
+      "step": 6,
+      "name": "CUSTOM_METRIC_API_CALLS_MADE",
+      "timestamp": "2025-07-09T06:27:55.958223",
+      "message": "\ud83d\udcc8 Custom metric: api_calls_made = 5",
+      "elapsed_time": 1.5347726345062256
+    },
+    {
+      "step": 7,
+      "name": "ENTITY_EXTRACTION_BOTTLENECK",
+      "timestamp": "2025-07-09T06:27:55.958223",
+      "message": "\u26a0\ufe0f Performance bottleneck detected in ENTITY_EXTRACTION: SLOW_API_RESPONSE",
+      "elapsed_time": 1.5347726345062256
+    },
+    {
+      "step": 8,
+      "name": "PROCESS_END",
+      "timestamp": "2025-07-09T06:27:55.958223",
+      "message": "\u2705 Process completed with status: SUCCESS",
+      "elapsed_time": 1.5347726345062256
+    }
+  ],
+  "data_lineage": [
+    {
+      "step": "CHUNKING",
+      "timestamp": "2025-07-09T06:27:55.957216",
+      "input_summary": {
+        "type": "string",
+        "length": 64,
+        "is_empty": false,
+        "preview": "This is a sample document with multiple paragraphs and sections.",
+        "word_count": 10
+      },
+      "output_summary": {
+        "type": "list",
+        "length": 3,
+        "is_empty": false,
+        "first_item_type": "str",
+        "sample": [
+          "This is a sample document",
+          "with multiple paragraphs",
+          "and sections."
+        ],
+        "type_distribution": {
+          "str": 3
+        }
+      },
+      "processing_time": 0.3,
+      "transformation_type": "Type change: str -> list",
+      "transformation_details": {
+        "chunking_strategy": "sentence_based",
+        "chunk_size": 512,
+        "overlap": 50
+      }
+    }
+  ],
+  "performance_analysis": {
+    "bottlenecks": [
+      {
+        "step": "ENTITY_EXTRACTION",
+        "type": "SLOW_API_RESPONSE",
+        "timestamp": "2025-07-09T06:27:55.958223",
+        "details": {
+          "api_endpoint": "gemini-pro",
+          "response_time": 15.5,
+          "expected_time": 3.0,
+          "retry_count": 2
+        }
+      }
+    ],
+    "memory_usage": [
+      {
+        "step": "PROCESS_START",
+        "memory_mb": 17.921875,
+        "timestamp": "2025-07-09T06:27:54.446133"
+      },
+      {
+        "step": "DOCUMENT_LOADING",
+        "memory_mb": 17.9296875,
+        "timestamp": "2025-07-09T06:27:54.447150"
+      },
+      {
+        "step": "DOCUMENT_PARSING",
+        "memory_mb": 17.9296875,
+        "timestamp": "2025-07-09T06:27:55.448709"
+      },
+      {
+        "step": "CHUNKING_DATA_FLOW",
+        "memory_mb": 17.93359375,
+        "timestamp": "2025-07-09T06:27:55.957216"
+      },
+      {
+        "step": "CUSTOM_METRIC_TOKENS_PROCESSED",
+        "memory_mb": 17.93359375,
+        "timestamp": "2025-07-09T06:27:55.958223"
+      },
+      {
+        "step": "CUSTOM_METRIC_API_CALLS_MADE",
+        "memory_mb": 17.93359375,
+        "timestamp": "2025-07-09T06:27:55.958223"
+      },
+      {
+        "step": "ENTITY_EXTRACTION_BOTTLENECK",
+        "memory_mb": 17.93359375,
+        "timestamp": "2025-07-09T06:27:55.958223"
+      },
+      {
+        "step": "PROCESS_END",
+        "memory_mb": 17.9453125,
+        "timestamp": "2025-07-09T06:27:55.958223"
+      }
+    ],
+    "processing_speeds": {}
+  },
+  "statistics": {
+    "total_time": 1.5347726345062256,
+    "total_steps": 7,
+    "average_step_time": 0.21925323350088938,
+    "step_distribution": {
+      "PROCESS": 1,
+      "DOCUMENT": 2,
+      "CHUNKING": 1,
+      "CUSTOM": 2,
+      "ENTITY": 1
+    },
+    "error_count": 0,
+    "warning_count": 1,
+    "data_quality_scores": [],
+    "average_data_quality": 1.0
+  },
+  "custom_metrics": [
+    {
+      "metric_name": "tokens_processed",
+      "value": 1250,
+      "step_name": "DOCUMENT_PARSING",
+      "timestamp": "2025-07-09T06:27:55.957216",
+      "tags": {
+        "model": "gemini-pro"
+      }
+    },
+    {
+      "metric_name": "api_calls_made",
+      "value": 5,
+      "step_name": "ENTITY_EXTRACTION",
+      "timestamp": "2025-07-09T06:27:55.958223",
+      "tags": {
+        "provider": "google"
+      }
+    }
+  ]
+}

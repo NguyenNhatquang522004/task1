@@ -1,0 +1,25 @@
+
+        
+🔍 COMPREHENSIVE PROCESS REPORT FOR: performance_demo.pdf
+================================================================================
+📄 File: performance_demo.pdf
+🤖 Model: gemini-pro
+📊 Source Type: local
+⏱️  Total Duration: 7.13s
+📈 Final Status: SUCCESS
+� Total Steps: 6
+
+📋 TIMELINE SUMMARY:
+   1. 🔄 [PROCESS_START] 🚀 Starting document processing for: performance_demo.pdf
+   2. 🔄 [FAST_OPERATION] Quick data processing
+   3. 🔄 [MODERATE_OPERATION] Medium complexity processing
+   4. 🔄 [SLOW_OPERATION] Complex AI processing
+   5. 🔄 [API_CALL_BOTTLENECK] ⚠️ Performance bottleneck detected in API_CALL: TIMEOUT
+   6. 🔄 [PROCESS_END] ✅ Process completed with status: SUCCESS
+
+⚠️  PERFORMANCE BOTTLENECKS DETECTED:
+  - API_CALL: TIMEOUT
+
+🟢 DATA QUALITY SCORE: 1.00
+
+================================================================================

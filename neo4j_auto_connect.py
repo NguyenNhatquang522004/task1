@@ -88,6 +88,57 @@ class Neo4jAutoConnector:
             self.print_status(f"LangChain Neo4j connection failed: {str(e)}", "ERROR")
             return False
             
+    def recreate_vector_index(self):
+        """Recreate vector index with correct dimensions for current embedding model"""
+        try:
+            self.print_status("Recreating vector index with correct dimensions...", "INFO")
+            
+            # Get embedding dimension from environment
+            embedding_model = os.getenv('EMBEDDING_MODEL', 'BAAI/bge-m3')
+            
+            # Default dimensions for common models
+            dimensions_map = {
+                'all-MiniLM-L6-v2': 384,
+                'BAAI/bge-m3': 1024,
+                'text-embedding-ada-002': 1536,
+                'text-embedding-3-small': 1536,
+                'text-embedding-3-large': 3072
+            }
+            
+            dimension = dimensions_map.get(embedding_model, 1024)
+            
+            # Check if vector index exists
+            indexes = self.graph.query("SHOW INDEXES")
+            vector_index_exists = any(idx.get('name') == 'vector' for idx in indexes)
+            
+            if vector_index_exists:
+                self.print_status("Dropping existing vector index...", "INFO")
+                self.graph.query("DROP INDEX vector IF EXISTS")
+                self.print_status("Existing vector index dropped", "SUCCESS")
+            
+            # Create new vector index with correct dimensions
+            self.print_status(f"Creating vector index with {dimension} dimensions...", "INFO")
+            
+            vector_index_query = f"""
+            CREATE VECTOR INDEX vector IF NOT EXISTS
+            FOR (c:Chunk) ON (c.embedding)
+            OPTIONS {{
+                indexConfig: {{
+                    `vector.dimensions`: {dimension},
+                    `vector.similarity_function`: 'cosine'
+                }}
+            }}
+            """
+            
+            self.graph.query(vector_index_query)
+            self.print_status(f"Vector index recreated (dimension: {dimension})", "SUCCESS")
+            
+            return True
+            
+        except Exception as e:
+            self.print_status(f"Vector index recreation failed: {str(e)}", "ERROR")
+            return False
+            
     def setup_indexes(self):
         """Setup required indexes for LLM Graph Builder"""
         try:
@@ -101,17 +152,18 @@ class Neo4jAutoConnector:
                 self.print_status("Creating vector index for embeddings...", "INFO")
                 
                 # Get embedding dimension from environment
-                embedding_model = os.getenv('EMBEDDING_MODEL', 'all-MiniLM-L6-v2')
+                embedding_model = os.getenv('EMBEDDING_MODEL', 'BAAI/bge-m3')
                 
                 # Default dimensions for common models
                 dimensions_map = {
                     'all-MiniLM-L6-v2': 384,
+                    'BAAI/bge-m3': 1024,
                     'text-embedding-ada-002': 1536,
                     'text-embedding-3-small': 1536,
                     'text-embedding-3-large': 3072
                 }
                 
-                dimension = dimensions_map.get(embedding_model, 384)
+                dimension = dimensions_map.get(embedding_model, 1024)
                 
                 vector_index_query = f"""
                 CREATE VECTOR INDEX vector IF NOT EXISTS
@@ -128,6 +180,29 @@ class Neo4jAutoConnector:
                 self.print_status(f"Vector index created (dimension: {dimension})", "SUCCESS")
             else:
                 self.print_status("Vector index already exists", "INFO")
+                
+                # Check if dimensions match current model
+                embedding_model = os.getenv('EMBEDDING_MODEL', 'BAAI/bge-m3')
+                dimensions_map = {
+                    'all-MiniLM-L6-v2': 384,
+                    'BAAI/bge-m3': 1024,
+                    'text-embedding-ada-002': 1536,
+                    'text-embedding-3-small': 1536,
+                    'text-embedding-3-large': 3072
+                }
+                expected_dimension = dimensions_map.get(embedding_model, 1024)
+                
+                try:
+                    # Try to get index info to check dimensions
+                    index_info = self.graph.query("CALL db.indexes() YIELD name, options WHERE name = 'vector' RETURN options")
+                    if index_info:
+                        current_dimensions = index_info[0]['options'].get('vector.dimensions', 0)
+                        if current_dimensions != expected_dimension:
+                            self.print_status(f"Vector index dimensions mismatch (current: {current_dimensions}, expected: {expected_dimension})", "WARNING")
+                            self.print_status("Recreating vector index with correct dimensions...", "INFO")
+                            return self.recreate_vector_index()
+                except Exception as e:
+                    self.print_status(f"Could not check index dimensions: {str(e)}", "WARNING")
                 
             # Show all indexes
             indexes = self.graph.query("SHOW INDEXES")

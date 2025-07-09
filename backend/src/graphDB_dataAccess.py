@@ -149,7 +149,7 @@ class graphDBdataAccess:
         """
         index = self.graph.query("""show indexes yield * where type = 'VECTOR' and name = 'vector'""",session_params={"database":self.graph._database})
         # logging.info(f'show index vector: {index}')
-        knn_min_score = os.environ.get('KNN_MIN_SCORE')
+        knn_min_score = os.environ.get('KNN_MIN_SCORE', '0.94')
         if len(index) > 0:
             logging.info('update KNN graph')
             self.graph.query("""MATCH (c:Chunk)
@@ -396,8 +396,8 @@ class graphDBdataAccess:
         return self.execute_query(query,param)
     
     def get_duplicate_nodes_list(self):
-        score_value = float(os.environ.get('DUPLICATE_SCORE_VALUE'))
-        text_distance = int(os.environ.get('DUPLICATE_TEXT_DISTANCE'))
+        score_value = float(os.environ.get('DUPLICATE_SCORE_VALUE', '0.97'))
+        text_distance = int(os.environ.get('DUPLICATE_TEXT_DISTANCE', '3'))
         query_duplicate_nodes = """
                 MATCH (n:!Chunk&!Session&!Document&!`__Community__`) with n 
                 WHERE n.embedding is not null and n.id is not null // and size(toString(n.id)) > 3

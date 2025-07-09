@@ -1,0 +1,18 @@
+
+        
+🔍 COMPREHENSIVE PROCESS REPORT FOR: lineage_demo.pdf
+================================================================================
+📄 File: lineage_demo.pdf
+🤖 Model: gemini-pro
+📊 Source Type: local
+⏱️  Total Duration: 0.00s
+📈 Final Status: SUCCESS
+� Total Steps: 2
+
+📋 TIMELINE SUMMARY:
+   1. 🔄 [PROCESS_START] 🚀 Starting document processing for: lineage_demo.pdf
+   2. 🔄 [PROCESS_END] ✅ Process completed with status: SUCCESS
+
+🟢 DATA QUALITY SCORE: 1.00
+
+================================================================================

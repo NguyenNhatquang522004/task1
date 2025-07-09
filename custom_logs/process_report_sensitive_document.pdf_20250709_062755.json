@@ -1,0 +1,122 @@
+{
+  "process_summary": {
+    "file_name": "sensitive_document.pdf",
+    "model": "gemini-pro",
+    "source_type": "encrypted",
+    "status": "SUCCESS",
+    "duration": "0.00s",
+    "total_steps": 4
+  },
+  "timeline": [
+    {
+      "step": 1,
+      "name": "PROCESS_START",
+      "timestamp": "2025-07-09T06:27:55.972568",
+      "message": "\ud83d\ude80 Starting document processing for: sensitive_document.pdf",
+      "elapsed_time": 0.0
+    },
+    {
+      "step": 2,
+      "name": "API_CALL",
+      "timestamp": "2025-07-09T06:27:55.972568",
+      "message": "Making API call to external service",
+      "elapsed_time": 0.0
+    },
+    {
+      "step": 3,
+      "name": "DATA_PROCESSING_DATA_FLOW",
+      "timestamp": "2025-07-09T06:27:55.973567",
+      "message": "\ud83d\udcca Data flow for DATA_PROCESSING - Same size list transformation (10000 items)",
+      "elapsed_time": 0.0009992122650146484
+    },
+    {
+      "step": 4,
+      "name": "PROCESS_END",
+      "timestamp": "2025-07-09T06:27:55.974542",
+      "message": "\u2705 Process completed with status: SUCCESS",
+      "elapsed_time": 0.0019741058349609375
+    }
+  ],
+  "data_lineage": [
+    {
+      "step": "DATA_PROCESSING",
+      "timestamp": "2025-07-09T06:27:55.973567",
+      "input_summary": {
+        "type": "list",
+        "length": 10000,
+        "is_empty": false,
+        "first_item_type": "int",
+        "sample": [
+          "0",
+          "1",
+          "2"
+        ],
+        "type_distribution": {
+          "int": 100
+        }
+      },
+      "output_summary": {
+        "type": "list",
+        "length": 10000,
+        "is_empty": false,
+        "first_item_type": "int",
+        "sample": [
+          "0",
+          "2",
+          "4"
+        ],
+        "type_distribution": {
+          "int": 100
+        }
+      },
+      "processing_time": 0.8,
+      "transformation_type": "Same size list transformation (10000 items)",
+      "transformation_details": {
+        "processing_type": "multiplication",
+        "batch_size": 1000,
+        "parallel_processing": true
+      }
+    }
+  ],
+  "performance_analysis": {
+    "bottlenecks": [],
+    "memory_usage": [
+      {
+        "step": "PROCESS_START",
+        "memory_mb": 17.9921875,
+        "timestamp": "2025-07-09T06:27:55.972568"
+      },
+      {
+        "step": "API_CALL",
+        "memory_mb": 17.9921875,
+        "timestamp": "2025-07-09T06:27:55.972568"
+      },
+      {
+        "step": "DATA_PROCESSING_DATA_FLOW",
+        "memory_mb": 18.8828125,
+        "timestamp": "2025-07-09T06:27:55.973567"
+      },
+      {
+        "step": "PROCESS_END",
+        "memory_mb": 18.8828125,
+        "timestamp": "2025-07-09T06:27:55.974542"
+      }
+    ],
+    "processing_speeds": {}
+  },
+  "statistics": {
+    "total_time": 0.0019741058349609375,
+    "total_steps": 3,
+    "average_step_time": 0.0006580352783203125,
+    "step_distribution": {
+      "PROCESS": 1,
+      "API": 1,
+      "DATA": 1
+    },
+    "error_count": 0,
+    "warning_count": 0,
+    "data_quality_scores": [],
+    "average_data_quality": 1.0
+  },
+  "custom_metrics": []
+}

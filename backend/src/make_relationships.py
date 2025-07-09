@@ -20,12 +20,12 @@ except Exception as e:
     # Create a fallback embedding function
     class FallbackEmbedding:
         def embed_documents(self, texts):
-            return [[0.0] * 384 for _ in texts]
+            return [[0.0] * 1024 for _ in texts]
         def embed_query(self, text):
-            return [0.0] * 384
+            return [0.0] * 1024
     
     EMBEDDING_FUNCTION = FallbackEmbedding()
-    EMBEDDING_DIMENSION = 384
+    EMBEDDING_DIMENSION = 1024
     logging.info("Using fallback embedding function")
 
 def merge_relationship_between_chunk_and_entites(graph: Neo4jGraph, graph_documents_chunk_chunk_Id : list):

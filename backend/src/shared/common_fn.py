@@ -96,7 +96,7 @@ def load_embedding_model(embedding_model_name: str):
             if cache_dir.exists():
                 logging.info(f"Found local embedding cache at: {cache_dir}")
                 embeddings = HuggingFaceEmbeddings(
-                    model_name="all-MiniLM-L6-v2",
+                    model_name="BAAI/bge-m3",
                     cache_folder=str(cache_dir),
                     model_kwargs={'local_files_only': True},
                     encode_kwargs={'normalize_embeddings': True}
@@ -104,12 +104,12 @@ def load_embedding_model(embedding_model_name: str):
             else:
                 logging.info("No local cache found, attempting to download...")
                 embeddings = HuggingFaceEmbeddings(
-                    model_name="all-MiniLM-L6-v2",
+                    model_name="BAAI/bge-m3",
                     model_kwargs={'local_files_only': False},
                     encode_kwargs={'normalize_embeddings': True}
                 )
             
-            dimension = 384
+            dimension = 1024
             logging.info(f"Embedding: Using Langchain HuggingFaceEmbeddings , Dimension:{dimension}")
             
         except Exception as e:
@@ -119,7 +119,7 @@ def load_embedding_model(embedding_model_name: str):
             # Create a simple placeholder embedding function
             class SimpleEmbeddings:
                 def __init__(self):
-                    self.dimension = 384
+                    self.dimension = 1024
                 
                 def embed_documents(self, texts):
                     # Simple hash-based embedding as fallback
@@ -131,10 +131,10 @@ def load_embedding_model(embedding_model_name: str):
                         text_hash = hashlib.md5(text.encode()).hexdigest()
                         # Convert hash to numbers and normalize
                         embedding = [float(int(text_hash[i:i+2], 16)) / 255.0 for i in range(0, min(len(text_hash), 32), 2)]
-                        # Pad or truncate to 384 dimensions
-                        while len(embedding) < 384:
-                            embedding.extend(embedding[:384-len(embedding)])
-                        embedding = embedding[:384]
+                        # Pad or truncate to 1024 dimensions
+                        while len(embedding) < 1024:
+                            embedding.extend(embedding[:1024-len(embedding)])
+                        embedding = embedding[:1024]
                         embeddings.append(embedding)
                     return embeddings
                 
@@ -142,7 +142,7 @@ def load_embedding_model(embedding_model_name: str):
                     return self.embed_documents([text])[0]
             
             embeddings = SimpleEmbeddings()
-            dimension = 384
+            dimension = 1024
             logging.info(f"Embedding: Using Simple Hash-based Embeddings (fallback), Dimension:{dimension}")
             
     return embeddings, dimension

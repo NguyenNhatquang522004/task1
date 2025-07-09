@@ -1,0 +1,27 @@
+
+        
+🔍 COMPREHENSIVE PROCESS REPORT FOR: demo_document.pdf
+================================================================================
+📄 File: demo_document.pdf
+🤖 Model: gemini-pro
+📊 Source Type: local
+⏱️  Total Duration: 1.54s
+📈 Final Status: SUCCESS
+� Total Steps: 8
+
+📋 TIMELINE SUMMARY:
+   1. 🔄 [PROCESS_START] 🚀 Starting document processing for: demo_document.pdf
+   2. 🔄 [DOCUMENT_LOADING] Loading document from file system
+   3. 🔄 [DOCUMENT_PARSING] Parsing document content
+   4. 🔄 [CHUNKING_DATA_FLOW] 📊 Data flow for CHUNKING - Type change: str -> list
+   5. 🔄 [CUSTOM_METRIC_TOKENS_PROCESSED] 📈 Custom metric: tokens_processed = 1250
+   6. 🔄 [CUSTOM_METRIC_API_CALLS_MADE] 📈 Custom metric: api_calls_made = 5
+   7. 🔄 [ENTITY_EXTRACTION_BOTTLENECK] ⚠️ Performance bottleneck detected in ENTITY_EXTRACTION: SLOW_API_RESPONSE
+   8. 🔄 [PROCESS_END] ✅ Process completed with status: SUCCESS
+
+⚠️  PERFORMANCE BOTTLENECKS DETECTED:
+  - ENTITY_EXTRACTION: SLOW_API_RESPONSE
+
+🟢 DATA QUALITY SCORE: 1.00
+
+================================================================================

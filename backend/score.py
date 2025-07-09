@@ -8,6 +8,7 @@ from src.shared.llm_graph_builder_exception import LLMGraphBuilderException
 import uvicorn
 import asyncio
 import base64
+import os
 from langserve import add_routes
 from langchain_google_vertexai import ChatVertexAI
 from src.api_response import create_api_response
@@ -240,6 +241,15 @@ async def extract_knowledge_graph_from_file(
     """
     try:
         start_time = time.time()
+        
+        # Apply default values from environment variables if not provided
+        if token_chunk_size is None:
+            token_chunk_size = int(os.getenv('TOKENS_PER_CHUNK', 1024))
+        if chunk_overlap is None:
+            chunk_overlap = int(os.getenv('CHUNK_OVERLAP', 100))
+        if chunks_to_combine is None:
+            chunks_to_combine = int(os.getenv('NUMBER_OF_CHUNKS_TO_COMBINE', 6))
+        
         graph = create_graph_database_connection(uri, userName, password, database)   
         graphDb_data_Access = graphDBdataAccess(graph)
         if source_type == 'local file':

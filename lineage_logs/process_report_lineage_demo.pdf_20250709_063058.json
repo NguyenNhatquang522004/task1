@@ -1,0 +1,56 @@
+{
+  "process_summary": {
+    "file_name": "lineage_demo.pdf",
+    "model": "gemini-pro",
+    "source_type": "local",
+    "status": "SUCCESS",
+    "duration": "0.00s",
+    "total_steps": 2
+  },
+  "timeline": [
+    {
+      "step": 1,
+      "name": "PROCESS_START",
+      "timestamp": "2025-07-09T06:30:58.241231",
+      "message": "\ud83d\ude80 Starting document processing for: lineage_demo.pdf",
+      "elapsed_time": 0.0
+    },
+    {
+      "step": 2,
+      "name": "PROCESS_END",
+      "timestamp": "2025-07-09T06:30:58.245229",
+      "message": "\u2705 Process completed with status: SUCCESS",
+      "elapsed_time": 0.0039980411529541016
+    }
+  ],
+  "data_lineage": [],
+  "performance_analysis": {
+    "bottlenecks": [],
+    "memory_usage": [
+      {
+        "step": "PROCESS_START",
+        "memory_mb": 18.7578125,
+        "timestamp": "2025-07-09T06:30:58.241231"
+      },
+      {
+        "step": "PROCESS_END",
+        "memory_mb": 18.7578125,
+        "timestamp": "2025-07-09T06:30:58.245229"
+      }
+    ],
+    "processing_speeds": {}
+  },
+  "statistics": {
+    "total_time": 0.0039980411529541016,
+    "total_steps": 1,
+    "average_step_time": 0.0039980411529541016,
+    "step_distribution": {
+      "PROCESS": 1
+    },
+    "error_count": 0,
+    "warning_count": 0,
+    "data_quality_scores": [],
+    "average_data_quality": 1.0
+  },
+  "custom_metrics": []
+}

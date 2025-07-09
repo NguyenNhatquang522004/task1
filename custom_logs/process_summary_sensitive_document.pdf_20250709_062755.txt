@@ -1,0 +1,20 @@
+
+        
+🔍 COMPREHENSIVE PROCESS REPORT FOR: sensitive_document.pdf
+================================================================================
+📄 File: sensitive_document.pdf
+🤖 Model: gemini-pro
+📊 Source Type: encrypted
+⏱️  Total Duration: 0.00s
+📈 Final Status: SUCCESS
+� Total Steps: 4
+
+📋 TIMELINE SUMMARY:
+   1. 🔄 [PROCESS_START] 🚀 Starting document processing for: sensitive_document.pdf
+   2. 🔄 [API_CALL] Making API call to external service
+   3. 🔄 [DATA_PROCESSING_DATA_FLOW] 📊 Data flow for DATA_PROCESSING - Same size list transformation (10000 items)
+   4. 🔄 [PROCESS_END] ✅ Process completed with status: SUCCESS
+
+🟢 DATA QUALITY SCORE: 1.00
+
+================================================================================

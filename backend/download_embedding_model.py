@@ -26,7 +26,7 @@ def download_embedding_model():
         
         # Download and cache the model
         model = SentenceTransformer(
-            'all-MiniLM-L6-v2',
+            'BAAI/bge-m3',
             cache_folder=str(cache_dir)
         )
         
@@ -37,7 +37,7 @@ def download_embedding_model():
         # Save model info
         info_file = cache_dir / "model_info.txt"
         with open(info_file, 'w') as f:
-            f.write(f"Model: all-MiniLM-L6-v2\n")
+            f.write(f"Model: BAAI/bge-m3\n")
             f.write(f"Dimension: {len(test_embedding)}\n")
             f.write(f"Cache directory: {cache_dir}\n")
         
@@ -62,7 +62,7 @@ def test_offline_mode():
         cache_dir = Path(__file__).parent / "embedding_cache"
         
         embeddings = HuggingFaceEmbeddings(
-            model_name="all-MiniLM-L6-v2",
+            model_name="BAAI/bge-m3",
             cache_folder=str(cache_dir),
             model_kwargs={'local_files_only': True}
         )
