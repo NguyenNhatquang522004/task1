@@ -702,22 +702,25 @@ async def processing_source(uri, userName, password, database, model, file_name,
       
       # 🏁 STEP 13: Final Status Check and Cleanup
       result = graphDb_data_Access.get_current_status_document_node(file_name)
-      is_cancelled_status = result[0]['is_cancelled']
-      if bool(is_cancelled_status) == True:
-        job_status = 'Cancelled'
-        
-        process_logger.log_step(
-          "FINAL_STATUS_CANCELLED",
-          "Final status check: Processing was cancelled",
-          {
-            'final_status': 'Cancelled',
-            'cancellation_point': 'final_check',
-            'chunks_processed': select_chunks_upto + select_chunks_with_retry if 'select_chunks_upto' in locals() else 0
-          },
-          level="WARNING"
-        )
-        
-        logging.info(f'Is_cancelled True at the end extraction')
+      if len(result) > 0:
+        is_cancelled_status = result[0]['is_cancelled']
+        if bool(is_cancelled_status) == True:
+          job_status = 'Cancelled'
+          
+          process_logger.log_step(
+            "FINAL_STATUS_CANCELLED",
+            "Final status check: Processing was cancelled",
+            {
+              'final_status': 'Cancelled',
+              'cancellation_point': 'final_check',
+              'chunks_processed': select_chunks_upto + select_chunks_with_retry if 'select_chunks_upto' in locals() else 0
+            },
+            level="WARNING"
+          )
+          
+          logging.info(f'Is_cancelled True at the end extraction')
+      else:
+        logging.warning(f'No document node found during final status check for file: {file_name}')
         
       process_logger.log_step(
         "PROCESSING_FINALIZATION",
@@ -862,21 +865,22 @@ async def processing_source(uri, userName, password, database, model, file_name,
       logging.info("File does not process because its already in Processing status")
       return uri_latency,response
   else:
-    error_message = "Unable to get the status of document node."
+    # No document node found - log warning and continue processing
+    logging.warning(f"No document node found for file: {file_name}. This might be a new file.")
     
     process_logger.log_step(
-      "DOCUMENT_STATUS_ERROR",
-      "Failed to retrieve document status",
+      "DOCUMENT_NODE_NOT_FOUND",
+      "Document node not found, proceeding with processing",
       {
         'file_name': file_name,
-        'error': error_message,
-        'result_length': len(result)
+        'action': 'continue_processing_without_existing_node',
+        'result_length': len(result) if result else 0
       },
-      level="ERROR"
+      level="WARNING"
     )
     
-    logging.error(error_message)
-    raise LLMGraphBuilderException(error_message)
+    # Continue with processing by setting default values
+    job_status = 'New'
 
 async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password, database,file_name,model,allowedNodes,allowedRelationship, chunks_to_combine, node_count, rel_count, additional_instructions=None):
   """
@@ -1288,7 +1292,7 @@ def get_labels_and_relationtypes(uri, userName, password, database):
   excluded_relationships = {
        'NEXT_CHUNK', '_Bloom_Perspective_', 'FIRST_CHUNK',
        'SIMILAR', 'IN_COMMUNITY', 'PARENT_COMMUNITY', 'NEXT', 'LAST_MESSAGE',
-       'PART_OF', 'HAS_ENTITY'  # Add missing system relationships
+
    }
   driver = get_graphDB_driver(uri, userName, password,database) 
   triples = set()

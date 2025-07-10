@@ -286,7 +286,15 @@ class graphDBdataAccess:
                 d.createdAt AS created_time
                 """
         param = {"file_name" : file_name}
-        return self.execute_query(query, param)
+        try:
+            result = self.execute_query(query, param)
+            if not result:
+                logging.warning(f"No document node found for file: {file_name}")
+                return []
+            return result
+        except Exception as e:
+            logging.error(f"Error getting document node status for {file_name}: {e}")
+            return []
     
     def delete_file_from_graph(self, filenames, source_types, deleteEntities:str, merged_dir:str, uri):
         

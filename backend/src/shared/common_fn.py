@@ -1,5 +1,6 @@
 import hashlib
 import logging
+from datetime import datetime
 from src.document_sources.youtube import create_youtube_url
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_vertexai import VertexAIEmbeddings
@@ -216,6 +217,8 @@ def create_gcs_bucket_folder_name_hashed(uri, file_name):
   return folder_name_sha1_hashed
 
 def formatted_time(current_time):
+  if current_time is None:
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')
   formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S %Z')
   return str(formatted_time)
 

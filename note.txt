@@ -1,557 +1,225 @@
-{
-  "labels": [
-    // Labels gốc
-    "Course",
-    "Author", 
-    "Institution",
-    "Publisher",
-    "Lesson",
-    "Chapter",
-    "Unit", 
-    "Section",
-    "Exercise",
-    "Activity",
-    "Prerequisite",
-    "Assessment",
-    "Method",
-    "Skill",
-    "Competency",
-    "Knowledge",
-    "Application",
-    "Software",
-    "Tool",
-    "Equipment",
-    "Reference",
-    "Platform",
-    "Bibliography",
-    "Sample",
-    "Case_Study",
-    "Resource",
-    "Topic",
-    "Concept",
-    "Learning_Outcome",
-    "Material",
-    
-    // Labels bổ sung cho Course Guidelines
-    "Course_Requirement",
-    "Learning_Method",
-    "Assessment_Method", 
-    "Study_Approach",
-    "Attendance_Policy",
-    "Homework_Policy",
-    "Grading_Criteria",
-    "Study_Guideline",
-    
-    // Labels bổ sung cho Mục lục
-    "Table_Of_Contents",
-    "Content_Entry",
-    "Page_Reference",
-    "Section_Number",
-    "Content_Hierarchy",
-    "Navigation_Link",
-    
-    // Labels cho People & Roles - tối ưu cho LLM extraction
-    "Student",
-    "Teacher",
-    "Instructor",
-    "Professor",
-    "Researcher",
-    "Expert",
-    "Reviewer",
-    "Editor",
-    "Contributor",
-    
-    // Labels cho Content Types - phù hợp với text processing
-    "Text",
-    "Image",
-    "Diagram",
-    "Chart",
-    "Graph",
-    "Table",
-    "Formula",
-    "Code",
-    "Example",
-    "Definition",
-    "Theorem",
-    "Proof",
-    "Summary",
-    "Abstract",
-    "Introduction",
-    "Conclusion",
-    "Appendix",
-    "Index",
-    "Glossary",
-    "FAQ",
-    
-    // Labels cho Learning & Progress - tối ưu cho educational content
-    "Learning_Path",
-    "Progress",
-    "Achievement",
-    "Certification",
-    "Grade",
-    "Score",
-    "Feedback",
-    "Review",
-    "Comment",
-    "Note",
-    "Annotation",
-    "Bookmark",
-    
-    // Labels cho Technical & Digital - phù hợp với modern textbooks
-    "Video",
-    "Audio",
-    "Animation",
-    "Simulation",
-    "Interactive_Element",
-    "Link",
-    "URL",
-    "File",
-    "Document",
-    "PDF",
-    "Presentation",
-    "Spreadsheet",
-    "Database",
-    "API",
-    "Plugin",
-    "Extension",
-    
-    // Labels cho Metadata & Organization - tối ưu cho knowledge graphs
-    "Tag",
-    "Category",
-    "Classification",
-    "Keyword",
-    "Metadata",
-    "Property",
-    "Attribute",
-    "Version",
-    "Edition",
-    "Language",
-    "Format",
-    "License",
-    "Copyright",
-    "ISBN",
-    "DOI",
-    "Citation",
-    
-    // Labels cho Time & Scheduling - quan trọng cho academic content
-    "Schedule",
-    "Timeline",
-    "Deadline",
-    "Duration",
-    "Date",
-    "Time",
-    "Period",
-    "Semester",
-    "Quarter",
-    "Session",
-    "Event",
-    "Meeting",
-    "Conference",
-    "Workshop",
-    "Seminar",
-    
-    // Labels cho Quality & Standards - cần thiết cho educational content
-    "Standard",
-    "Guideline",
-    "Criteria",
-    "Benchmark",
-    "Metric",
-    "Indicator",
-    "Requirement",
-    "Specification",
-    "Protocol",
-    "Procedure",
-    "Policy",
-    "Rule",
-    "Regulation",
-    "Compliance",
-    
-    // Labels cho Vietnamese Academic System - tối ưu cho curriculum VN
-    "Subject",
-    "Course_Code",
-    "Credit",
-    "Academic_Year",
-    "Program",
-    "Department",
-    "Faculty",
-    "University",
-    "Curriculum",
-    "Syllabus",
-    "Lecture",
-    "Lab",
-    "Tutorial",
-    "Practical",
-    "Theory",
-    "Midterm",
-    "Final",
-    "Assignment",
-    "Project",
-    "Report",
-    "Presentation",
-    "Exam",
-    "Quiz",
-    "Test",
-    
-    // Labels cho Programming-Specific Content - tối ưu cho CMP subjects
-    "Algorithm",
-    "Function",
-    "Class",
-    "Object",
-    "Method",
-    "Variable",
-    "Array",
-    "Loop",
-    "Condition",
-    "Exception",
-    "Library",
-    "Framework",
-    "IDE",
-    "Compiler",
-    "Debugger",
-    "Syntax",
-    "Logic",
-    "Pattern",
-    "Structure",
-    "Architecture",
-    
-    // Labels cho Multi-Subject Support - phù hợp với nhiều môn
-    "Mathematics",
-    "Statistics",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "Economics",
-    "Management",
-    "Literature",
-    "History",
-    "Geography",
-    "Philosophy",
-    "Psychology",
-    "Sociology",
-    "Law",
-    "Medicine",
-    "Engineering",
-    "Computer_Science",
-    "Information_Technology",
-    "Business",
-    "Finance"
-  ],
+"labels": [
+  "Course", 
+  "Chapter",
+  "content of chapter",
+  "Lesson",
+  "content of Lesson",
+  "Section",
+  "content of Section",
+  "Topic",
+  "code",
+  "Concept",
+  "Example",
+  "Exercise",
+  "Definition",
+  "Teacher",
+  "Student",
+  "Author",
+  "Material",
+  "Reference",
+  "Table of Contents",
+  "Chapter of Table of Contents",
+  "Lesson of Table of Contents",
+  "Section of Table of Contents",
+  "Learning Objective",
+  "Learning Outcome",
+  "Learning Activity",
+  "Learning Resource",
+  "Learning Material",
+  "Learning Method",
+  "Learning Tool",
+  "Learning Environment",
+  "Learning Platform",
+  "Course Description",
+  "Course Content",
+  "Prerequisites",
+  "Course Requirements",
+  "Learning Approach",
+  "Assessment Methods",
+  "Publisher",
+  "Edition",
+  "organization",
+  "institution",
+  "academicProgram"
+],
+"relationshipTypes": [
+  "CONTAINS",
+  "BELONGS_TO", 
+  "REFERENCES",
+  "DESCRIBES",
+  "TEACHES",
+  "LEARNS",
+  "AUTHORS",
+  "PUBLISHES",
+  "MANAGES",
+  "OFFERS",
+  "REQUIRES",
+  "ACHIEVES",
+  "USES",
+  "SUPPORTS",
+  "LEADS_TO",
+  "IMPLEMENTS",
+  "EXTENDS", 
+  "CONFIGURES",
+  "DEMONSTRATES",
+  "IMPORTS"
+],
+  "schema": "giaotrinh"
+    "schema": "giaotrinh",
+  "triplet": [
+  "institution-MANAGES->organization",
+  "organization-OFFERS->academicProgram",
+  "academicProgram-CONTAINS->Course",
+  "Publisher-PUBLISHES->Course",
+  "Author-AUTHORS->Course",
   
-  "relationshipTypes": [
-    // Relationships gốc
-    "AUTHORED_BY",
-    "PUBLISHED_BY", 
-    "BELONGS_TO",
-    "PART_OF",
-    "REQUIRES",
-    "FOLLOWS",
-    "DEPENDS_ON",
-    "TEACHES",
-    "COVERS",
-    "DEVELOPS",
-    "LEADS_TO",
-    "USES",
-    "REQUIRES_TOOL",
-    "REFERENCES",
-    "CITES",
-    "ASSESSED_BY",
-    "EVALUATES",
-    "WEIGHTS",
-    "CONTAINS",
-    "INCLUDES",
-    "SUPPORTS",
-    "DEMONSTRATES",
-    "OFFERED_BY",
-    "TAUGHT_IN",
-    "DESIGNED_FOR",
-    "PREPARES_FOR",
-    "BUILDS_ON",
-    "APPLIES",
-    "RELATED_TO",
-    "SIMILAR_TO",
-    "COMPLEMENTED_BY",
-    
-    // Relationships bổ sung cho Course Guidelines
-    "HAS_REQUIREMENT",
-    "FOLLOWS_METHOD",
-    "EVALUATED_BY",
-    "REQUIRES_ATTENDANCE",
-    "ASSIGNS_HOMEWORK",
-    "GRADED_BY",
-    
-    // Relationships bổ sung cho Mục lục
-    "HAS_TABLE_OF_CONTENTS",
-    "LISTED_IN",
-    "LINKS_TO", 
-    "NUMBERED_AS",
-    "ORGANIZED_BY",
-    "NAVIGATES_TO",
-    
-    // Relationships cho People & Roles - tối ưu cho LLM
-    "ENROLLED_IN",
-    "INSTRUCTS",
-    "MENTORS",
-    "SUPERVISES",
-    "COLLABORATES_WITH",
-    "REVIEWS",
-    "APPROVES",
-    "RECOMMENDS",
-    "ENDORSES",
-    "CONTRIBUTES_TO",
-    "CREATED_BY",
-    "MODIFIED_BY",
-    "OWNED_BY",
-    "ASSIGNED_TO",
-    "RESPONSIBLE_FOR",
-    
-    // Relationships cho Content & Structure - quan trọng cho text processing
-    "DESCRIBES",
-    "EXPLAINS",
-    "ILLUSTRATES",
-    "EXEMPLIFIES",
-    "SUMMARIZES",
-    "INTRODUCES",
-    "CONCLUDES",
-    "DEFINES",
-    "PROVES",
-    "DEMONSTRATES",
-    "SHOWS",
-    "PRESENTS",
-    "DISCUSSES",
-    "ANALYZES",
-    "COMPARES",
-    "CONTRASTS",
-    "CATEGORIZES",
-    "CLASSIFIES",
-    "ORGANIZES",
-    "STRUCTURES",
-    
-    // Relationships cho Learning & Progress - tối ưu cho educational graphs
-    "LEARNS",
-    "STUDIES",
-    "PRACTICES",
-    "MASTERS",
-    "ACHIEVES",
-    "COMPLETES",
-    "PASSES",
-    "FAILS",
-    "RETAKES",
-    "IMPROVES",
-    "PROGRESSES",
-    "ADVANCES",
-    "GRADUATES",
-    "CERTIFIES",
-    "QUALIFIES",
-    "VALIDATES",
-    "VERIFIES",
-    "CONFIRMS",
-    
-    // Relationships cho Technical & Digital - phù hợp modern content
-    "LINKS_TO",
-    "EMBEDS",
-    "DISPLAYS",
-    "PLAYS",
-    "RUNS",
-    "EXECUTES",
-    "PROCESSES",
-    "GENERATES",
-    "PRODUCES",
-    "OUTPUTS",
-    "INPUTS",
-    "RECEIVES",
-    "SENDS",
-    "TRANSMITS",
-    "DOWNLOADS",
-    "UPLOADS",
-    "SYNCS",
-    "UPDATES",
-    "REFRESHES",
-    "LOADS",
-    
-    // Relationships cho Metadata & Organization - cần thiết cho knowledge graphs
-    "TAGGED_WITH",
-    "CATEGORIZED_AS",
-    "CLASSIFIED_AS",
-    "LABELED_AS",
-    "IDENTIFIED_BY",
-    "CHARACTERIZED_BY",
-    "ATTRIBUTED_TO",
-    "ASSOCIATED_WITH",
-    "LINKED_WITH",
-    "CONNECTED_TO",
-    "RELATED_TO",
-    "DERIVED_FROM",
-    "BASED_ON",
-    "INSPIRED_BY",
-    "INFLUENCED_BY",
-    "ADAPTED_FROM",
-    "TRANSLATED_FROM",
-    "CONVERTED_TO",
-    "TRANSFORMED_INTO",
-    
-    // Relationships cho Time & Scheduling - quan trọng cho academic content
-    "SCHEDULED_FOR",
-    "OCCURS_ON",
-    "STARTS_AT",
-    "ENDS_AT",
-    "LASTS_FOR",
-    "DURATION_OF",
-    "PRECEDES",
-    "SUCCEEDS",
-    "CONCURRENT_WITH",
-    "OVERLAPS_WITH",
-    "BEFORE",
-    "AFTER",
-    "DURING",
-    "WITHIN",
-    "THROUGHOUT",
-    "UNTIL",
-    "SINCE",
-    "FROM",
-    "TO",
-    
-    // Relationships cho Quality & Validation - tối ưu cho educational standards
-    "MEETS",
-    "SATISFIES",
-    "COMPLIES_WITH",
-    "CONFORMS_TO",
-    "ADHERES_TO",
-    "FOLLOWS",
-    "IMPLEMENTS",
-    "ENFORCES",
-    "MONITORS",
-    "TRACKS",
-    "MEASURES",
-    "EVALUATES",
-    "ASSESSES",
-    "RATES",
-    "SCORES",
-    "RANKS",
-    "COMPARES_TO",
-    "BENCHMARKS_AGAINST",
-    "VALIDATES_AGAINST",
-    "VERIFIES_WITH",
-    
-    // Relationships cho Dependency & Flow - cực kỳ quan trọng cho LLM extraction
-    "PREREQUISITE_FOR",
-    "REQUIRED_BY",
-    "DEPENDS_ON",
-    "ENABLES",
-    "TRIGGERS",
-    "ACTIVATES",
-    "INITIATES",
-    "TERMINATES",
-    "BLOCKS",
-    "PREVENTS",
-    "ALLOWS",
-    "PERMITS",
-    "GRANTS",
-    "DENIES",
-    "RESTRICTS",
-    "LIMITS",
-    "EXPANDS",
-    "EXTENDS",
-    "ENHANCES",
-    "MODIFIES",
-    
-    // Relationships cho Vietnamese Academic System - tối ưu cho curriculum VN
-    "OFFERED_BY",
-    "MANAGED_BY",
-    "COORDINATED_BY",
-    "SUPERVISED_BY",
-    "APPROVED_BY",
-    "ACCREDITED_BY",
-    "CERTIFIED_BY",
-    "RECOGNIZED_BY",
-    "GOVERNED_BY",
-    "REGULATED_BY",
-    "STANDARDIZED_BY",
-    "EVALUATED_BY",
-    "GRADED_BY",
-    "MARKED_BY",
-    "SCORED_BY",
-    "RANKED_BY",
-    "CLASSIFIED_BY",
-    "GROUPED_BY",
-    "ORGANIZED_BY",
-    "STRUCTURED_BY",
-    
-    // Relationships cho Programming & Technical Content - tối ưu cho CMP subjects
-    "CALLS",
-    "INVOKES",
-    "RETURNS",
-    "THROWS",
-    "CATCHES",
-    "HANDLES",
-    "PROCESSES",
-    "COMPILES",
-    "EXECUTES",
-    "DEBUGS",
-    "TESTS",
-    "VALIDATES",
-    "VERIFIES",
-    "OPTIMIZES",
-    "REFACTORS",
-    "DEPLOYS",
-    "INTEGRATES",
-    "INTERFACES_WITH",
-    "COMMUNICATES_WITH",
-    "CONNECTS_TO",
-    "INHERITS_FROM",
-    "EXTENDS",
-    "IMPLEMENTS",
-    "OVERRIDES",
-    "OVERLOADS",
-    "ENCAPSULATES",
-    "ABSTRACTS",
-    "POLYMORPHS",
-    "INSTANTIATES",
-    "DESTROYS",
-    
-    // Relationships cho Multi-Subject Cross-References - cực kỳ quan trọng
-    "APPLIES_TO",
-    "USED_IN",
-    "RELEVANT_TO",
-    "CONNECTED_WITH",
-    "INTEGRATED_WITH",
-    "COMBINED_WITH",
-    "MERGED_WITH",
-    "SYNTHESIZED_WITH",
-    "COORDINATED_WITH",
-    "SYNCHRONIZED_WITH",
-    "ALIGNED_WITH",
-    "COMPATIBLE_WITH",
-    "CONSISTENT_WITH",
-    "COMPLEMENTARY_TO",
-    "SUPPLEMENTARY_TO",
-    "SUPPORTIVE_OF",
-    "REINFORCES",
-    "STRENGTHENS",
-    "ENHANCES",
-    "ENRICHES",
-    
-    // Relationships cho Learning Progression - tối ưu cho curriculum sequence
-    "PRECEDES",
-    "FOLLOWS",
-    "SUCCEEDS",
-    "CONTINUES",
-    "BUILDS_UPON",
-    "EXPANDS_ON",
-    "DEVELOPS_FROM",
-    "EVOLVES_INTO",
-    "TRANSFORMS_TO",
-    "ADVANCES_TO",
-    "PROGRESSES_TO",
-    "GRADUATES_TO",
-    "PROMOTES_TO",
-    "ELEVATES_TO",
-    "UPGRADES_TO",
-    "TRANSITIONS_TO",
-    "MOVES_TO",
-    "SHIFTS_TO",
-    "CONVERTS_TO",
-    "ADAPTS_TO"
-  ],
+  "Course-CONTAINS->Chapter",
+  "Chapter-CONTAINS->Lesson", 
+  "Lesson-CONTAINS->Section",
   
-  "schema": "academic_textbook"
-}
+  "Chapter-CONTAINS->content of chapter",
+  "Lesson-CONTAINS->content of Lesson",
+  "Section-CONTAINS->content of Section",
+  
+  "Topic-BELONGS_TO->content of chapter",
+  "Concept-BELONGS_TO->content of chapter",
+  "Example-BELONGS_TO->content of chapter",
+  "Exercise-BELONGS_TO->content of chapter",
+  "Definition-BELONGS_TO->content of chapter",
+  "code-BELONGS_TO->content of chapter",
+  
+  "Topic-BELONGS_TO->content of Lesson",
+  "Concept-BELONGS_TO->content of Lesson",
+  "Example-BELONGS_TO->content of Lesson",
+  "Exercise-BELONGS_TO->content of Lesson",
+  "Definition-BELONGS_TO->content of Lesson",
+  "code-BELONGS_TO->content of Lesson",
+  
+  "Topic-BELONGS_TO->content of Section",
+  "Concept-BELONGS_TO->content of Section",
+  "Example-BELONGS_TO->content of Section",
+  "Exercise-BELONGS_TO->content of Section",
+  "Definition-BELONGS_TO->content of Section",
+  "code-BELONGS_TO->content of Section",
+  
+  "Course-CONTAINS->Table of Contents",
+  "Table of Contents-CONTAINS->Chapter of Table of Contents",
+  "Chapter of Table of Contents-CONTAINS->Lesson of Table of Contents",
+  "Lesson of Table of Contents-CONTAINS->Section of Table of Contents",
+  
+  "Chapter of Table of Contents-REFERENCES->Chapter",
+  "Lesson of Table of Contents-REFERENCES->Lesson",
+  "Section of Table of Contents-REFERENCES->Section",
+  
+  "Course Description-DESCRIBES->Course",
+  "Course Content-DESCRIBES->Course",
+  "Prerequisites-DESCRIBES->Course",
+  "Course Requirements-DESCRIBES->Course",
+  "Assessment Methods-DESCRIBES->Course",
+  "Learning Approach-DESCRIBES->Course",
+  
+  "Teacher-TEACHES->Course",
+  "Student-LEARNS->Course",
+  "Course-REQUIRES->Prerequisites",
+  "Learning Objective-LEADS_TO->Learning Outcome",
+  "Learning Activity-ACHIEVES->Learning Objective",
+  
+  "Learning Resource-SUPPORTS->Learning Activity",
+  "Learning Material-SUPPORTS->Learning Activity",
+  "Learning Tool-SUPPORTS->Learning Method",
+  "Learning Platform-SUPPORTS->Learning Environment",
+  "Reference-SUPPORTS->Material",
+  "Example-SUPPORTS->Concept",
+  "code-DEMONSTRATES->Concept",
+  
+  "Student-USES->Learning Resource",
+  "Teacher-USES->Learning Material",
+  "Learning Activity-USES->Learning Tool",
+  "Course-USES->Learning Platform",
+  
+  "Chapter-BELONGS_TO->Course",
+  "Lesson-BELONGS_TO->Chapter",
+  "Section-BELONGS_TO->Lesson",
+  "content of chapter-BELONGS_TO->Chapter",
+  "content of Lesson-BELONGS_TO->Lesson",
+  "content of Section-BELONGS_TO->Section",
+  
+  "code-IMPLEMENTS->Concept",
+  "Exercise-EXTENDS->Example",
+  "Learning Tool-CONFIGURES->Learning Environment",
+  "code-IMPORTS->Learning Resource"
+]
+ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize educational entities from this Java Spring Boot course material while maintaining proper hierarchical relationships. Focus on extracting:
+
+1. **Educational Structure**: Course, chapters, lessons, sections, topics and their hierarchical relationships using CONTAINS/BELONGS_TO
+2. **Learning Components**: Concepts, definitions, examples, exercises, and code snippets as distinct entities
+3. **Technical Entities**: Framework components (Spring Boot, JPA, etc.), programming constructs (classes, methods, annotations), and technologies mentioned
+4. **People and Organizations**: Authors, teachers, students, institutions involved
+
+**Important Guidelines**:
+- Treat specific values (version numbers, file paths, URLs, configuration values) as properties of their parent entities, not separate nodes
+- Code blocks should be extracted as 'code' entities with their purpose/context, not individual code lines
+- Learning objectives and outcomes should be separate entities linked to their respective lessons
+- Maintain the course's hierarchical structure (Course → Chapter → Lesson → Section → Topic)
+- Dependencies and technical relationships should use appropriate technical relationship types (IMPLEMENTS, EXTENDS, CONFIGURES, etc.)
+
+**Avoid extracting as separate entities**: Line numbers, specific dates, port numbers, file sizes, individual code statements, or granular technical parameters unless they represent key concepts being taught."""
+
+
+
+
+
+
+ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize educational entities from course materials while maintaining proper hierarchical relationships. Focus on extracting:
+
+1. **Educational Structure**: Course, chapters, lessons, sections, topics and their hierarchical relationships using CONTAINS/BELONGS_TO
+2. **Learning Components**: Concepts, definitions, examples, exercises, and code/formula snippets as distinct entities  
+3. **Technical Entities**: Framework components, programming constructs, methodologies, tools, and technologies mentioned
+4. **People and Organizations**: Authors, teachers, students, institutions involved
+5. **Learning Objectives and Outcomes**: Clearly defined learning goals and expected outcomes for each lesson or section
+6. **Resources**: Links to external resources, references, or supplementary materials
+7. **Dependencies**: Relationships between different components, such as prerequisites or dependencies between lessons or sections
+8. **Course Metadata**: Course Description, Course Content(nội dung môn học), Course Requirements, Learning Approach, Assessment Methods
+9. **Navigation Structure**: Table of Contents, Chapter of Table of Contents, Lesson of Table of Contents, Section of Table of Contents
+
+**VALID ENTITY LABELS (use exactly these)**:
+Course Structure: Course, Chapter, content of chapter, Lesson, content of Lesson, Section, content of Section, Topic
+Content Elements: code, Concept, Example, Exercise, Definition
+Educational Components: Learning Objective, Learning Outcome, Learning Activity, Learning Resource, Learning Material, Learning Method, Learning Tool, Learning Environment, Learning Platform, Course Description, Course Content, Prerequisites, Course Requirements, Learning Approach, Assessment Methods
+People & Organizations: Teacher, Student, Author, Publisher, organization, institution, academicProgram
+Resources: Material, Reference
+Navigation: Table of Contents, Chapter of Table of Contents, Lesson of Table of Contents, Section of Table of Contents
+Publication: Edition
+
+**VALID RELATIONSHIPS (use exactly these)**:
+- **CONTAINS**: Parent contains child element (Course CONTAINS Chapter, Chapter CONTAINS Lesson)
+- **BELONGS_TO**: Child belongs to parent (Lesson BELONGS_TO Chapter, Topic BELONGS_TO Section)
+- **REFERENCES**: Navigation/index points to content (Chapter of Table of Contents REFERENCES Chapter)
+- **DESCRIBES**: Metadata describes main entity (Course Description DESCRIBES Course)
+- **TEACHES**: Instructor relationship (Teacher TEACHES Course, Course TEACHES Concept)
+- **LEARNS**: Student relationship (Student LEARNS Course, Student LEARNS Concept)
+- **AUTHORS**: Authorship (Author AUTHORS Course, Author AUTHORS Material)
+- **PUBLISHES**: Publishing relationship (Publisher PUBLISHES Course, institution PUBLISHES Material)
+- **MANAGES**: Administrative control (institution MANAGES organization, organization MANAGES academicProgram)
+- **OFFERS**: Provision relationship (academicProgram OFFERS Course, institution OFFERS Course)
+- **REQUIRES**: Prerequisite relationship (Course REQUIRES Prerequisites, Lesson REQUIRES Learning Resource)
+- **ACHIEVES**: Goal attainment (Learning Activity ACHIEVES Learning Objective)
+- **USES**: Utilization relationship (Course USES Learning Tool, Student USES Learning Material)
+- **SUPPORTS**: Supporting relationship (Learning Resource SUPPORTS Learning Activity, Material SUPPORTS Example)
+- **LEADS_TO**: Sequential relationship (Learning Objective LEADS_TO Learning Outcome)
+- **IMPLEMENTS**: Technical implementation (code IMPLEMENTS Concept, Exercise IMPLEMENTS Learning Method)
+- **EXTENDS**: Technical extension (Concept EXTENDS Definition, Learning Method EXTENDS Learning Approach)
+- **CONFIGURES**: Technical configuration (Learning Tool CONFIGURES Learning Environment)
+- **DEMONSTRATES**: Illustration relationship (Example DEMONSTRATES Concept, code DEMONSTRATES Definition)
+- **IMPORTS**: Technical dependency (code IMPORTS Learning Resource, Learning Tool IMPORTS Material)
+
+**Important Guidelines**: 
+- Treat specific values (version numbers, file paths, URLs, configuration values, measurements, dates) as properties of their parent entities, not separate nodes
+- Code/formula blocks should be extracted as 'code' entities with their purpose/context, not individual lines
+- Learning objectives and outcomes should be separate entities linked to their respective lessons
+- Maintain the course's hierarchical structure (Course → Chapter → Lesson → Section → Topic)
+- Table of Contents elements should reference their corresponding actual content (Chapter of Table of Contents REFERENCES Chapter, etc.)
+- Course metadata entities (Course Description, Course Requirements, Assessment Methods) should be linked to the main Course entity using DESCRIBES relationship
+- Dependencies and technical relationships should use appropriate relationship types (IMPLEMENTS, EXTENDS, CONFIGURES, DEMONSTRATES, etc.)
+
+**Avoid extracting as separate entities**: Line numbers, specific dates, page numbers, file sizes, individual statements/formulas, or granular technical parameters unless they represent key concepts being taught."""

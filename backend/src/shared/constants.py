@@ -891,9 +891,59 @@ Use these rules to group and name categories accurately without introducing erro
 # types such as dates, numbers, revenues, and other non-entity information are not extracted as separate nodes.
 # Instead, treat these as properties associated with the relevant entities.""" 
 
-ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize entities while ensuring that specific data 
-types such as dates, numbers, revenues, and other non-entity information are not extracted as separate nodes.
-Instead, treat these as properties associated with the relevant entities."""
+ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize educational entities from course materials while maintaining proper hierarchical relationships. Focus on extracting:
+
+1. **Educational Structure**: Course, chapters, lessons, sections, topics and their hierarchical relationships using CONTAINS/BELONGS_TO
+2. **Learning Components**: Concepts, definitions, examples, exercises, and code/formula snippets as distinct entities  
+3. **Technical Entities**: Framework components, programming constructs, methodologies, tools, and technologies mentioned
+4. **People and Organizations**: Authors, teachers, students, institutions involved
+5. **Learning Objectives and Outcomes**: Clearly defined learning goals and expected outcomes for each lesson or section
+6. **Resources**: Links to external resources, references, or supplementary materials
+7. **Dependencies**: Relationships between different components, such as prerequisites or dependencies between lessons or sections
+8. **Course Metadata**: Course Description, Course Content(nội dung môn học), Course Requirements, Learning Approach, Assessment Methods
+9. **Navigation Structure**: Table of Contents, Chapter of Table of Contents, Lesson of Table of Contents, Section of Table of Contents
+
+**VALID ENTITY LABELS (use exactly these)**:
+Course Structure: Course, Chapter, content of chapter, Lesson, content of Lesson, Section, content of Section, Topic
+Content Elements: code, Concept, Example, Exercise, Definition
+Educational Components: Learning Objective, Learning Outcome, Learning Activity, Learning Resource, Learning Material, Learning Method, Learning Tool, Learning Environment, Learning Platform, Course Description, Course Content, Prerequisites, Course Requirements, Learning Approach, Assessment Methods
+People & Organizations: Teacher, Student, Author, Publisher, organization, institution, academicProgram
+Resources: Material, Reference
+Navigation: Table of Contents, Chapter of Table of Contents, Lesson of Table of Contents, Section of Table of Contents
+Publication: Edition
+
+**VALID RELATIONSHIPS (use exactly these)**:
+- **CONTAINS**: Parent contains child element (Course CONTAINS Chapter, Chapter CONTAINS Lesson)
+- **BELONGS_TO**: Child belongs to parent (Lesson BELONGS_TO Chapter, Topic BELONGS_TO Section)
+- **REFERENCES**: Navigation/index points to content (Chapter of Table of Contents REFERENCES Chapter)
+- **DESCRIBES**: Metadata describes main entity (Course Description DESCRIBES Course)
+- **TEACHES**: Instructor relationship (Teacher TEACHES Course, Course TEACHES Concept)
+- **LEARNS**: Student relationship (Student LEARNS Course, Student LEARNS Concept)
+- **AUTHORS**: Authorship (Author AUTHORS Course, Author AUTHORS Material)
+- **PUBLISHES**: Publishing relationship (Publisher PUBLISHES Course, institution PUBLISHES Material)
+- **MANAGES**: Administrative control (institution MANAGES organization, organization MANAGES academicProgram)
+- **OFFERS**: Provision relationship (academicProgram OFFERS Course, institution OFFERS Course)
+- **REQUIRES**: Prerequisite relationship (Course REQUIRES Prerequisites, Lesson REQUIRES Learning Resource)
+- **ACHIEVES**: Goal attainment (Learning Activity ACHIEVES Learning Objective)
+- **USES**: Utilization relationship (Course USES Learning Tool, Student USES Learning Material)
+- **SUPPORTS**: Supporting relationship (Learning Resource SUPPORTS Learning Activity, Material SUPPORTS Example)
+- **LEADS_TO**: Sequential relationship (Learning Objective LEADS_TO Learning Outcome)
+- **IMPLEMENTS**: Technical implementation (code IMPLEMENTS Concept, Exercise IMPLEMENTS Learning Method)
+- **EXTENDS**: Technical extension (Concept EXTENDS Definition, Learning Method EXTENDS Learning Approach)
+- **CONFIGURES**: Technical configuration (Learning Tool CONFIGURES Learning Environment)
+- **DEMONSTRATES**: Illustration relationship (Example DEMONSTRATES Concept, code DEMONSTRATES Definition)
+- **IMPORTS**: Technical dependency (code IMPORTS Learning Resource, Learning Tool IMPORTS Material)
+
+**Important Guidelines**: 
+- Treat specific values (version numbers, file paths, URLs, configuration values, measurements, dates) as properties of their parent entities, not separate nodes
+- Code/formula blocks should be extracted as 'code' entities with their purpose/context, not individual lines
+- Learning objectives and outcomes should be separate entities linked to their respective lessons
+- Maintain the course's hierarchical structure (Course → Chapter → Lesson → Section → Topic)
+- Table of Contents elements should reference their corresponding actual content (Chapter of Table of Contents REFERENCES Chapter, etc.)
+- Course metadata entities (Course Description, Course Requirements, Assessment Methods) should be linked to the main Course entity using DESCRIBES relationship
+- Dependencies and technical relationships should use appropriate relationship types (IMPLEMENTS, EXTENDS, CONFIGURES, DEMONSTRATES, etc.)
+
+**Avoid extracting as separate entities**: Line numbers, specific dates, page numbers, file sizes, individual statements/formulas, or granular technical parameters unless they represent key concepts being taught."""
 
 SCHEMA_VISUALIZATION_QUERY = """
 CALL db.schema.visualization() YIELD nodes, relationships
