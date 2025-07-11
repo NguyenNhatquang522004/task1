@@ -41,7 +41,7 @@ def load_document_content(file_path):
     else:
         loader = UnstructuredFileLoader(file_path, mode="elements",autodetect_encoding=True)
         return loader,encoding_flag
-    
+
 def get_documents_from_file_by_path(file_path,file_name):
     file_path = Path(file_path)
     if not file_path.exists():

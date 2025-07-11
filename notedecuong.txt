@@ -467,36 +467,214 @@
   ],
   "schema": "vietnamese_course_syllabus_complete"
 }
-ADDITIONAL_INSTRUCTIONS = """Extract entities and relationships from Vietnamese course syllabi to build knowledge graphs using ONLY the predefined schema.
+```
+ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize educational entities from Vietnamese course materials while maintaining proper hierarchical relationships and academic standards. Focus on extracting:
 
-VALID ENTITY LABELS (use exactly these):
-Course Structure: Course, Course_Name, Course_Code, Lesson, Chapter, Section, Topic, Course_Content, Curriculum, Syllabus, Course_Description
-Learning Outcomes: CLO, PLO, PI, Learning_Outcome, Course_Learning_Outcome, Program_Learning_Outcome, Performance_Indicator, Course_Objective, Course_Goal, Educational_Goal, Knowledge_Goal, Skill_Goal, Competency_Goal
-Teaching: Teaching_Method, Lecture, Discussion, Exercise, Assignment, Practice, Lab_Work, Practical_Exercise, Group_Work, Presentation, Tutorial, Self_Study
-Assessment: Assessment_Method, Assessment_Component, Grade_Component, Assessment_Task, Grading_Criteria, Final_Grade, Attendance_Grade, Assignment_Grade, Practical_Grade
-People: Instructor, Course_Instructor, Teaching_Assistant, Student, Lecturer, Course_Coordinator
-Organization: Department, Faculty, University, Program, Major, Institution, Academic_Unit
-Time: Academic_Year, Semester, Session, Schedule, Timeline
-Resources: Reference_Material, Textbook, Software, Tool, Equipment, Learning_Material
-Prerequisites: Prerequisite, Co_requisite, Required_Course, Foundation_Knowledge
+## 1. **COURSE STRUCTURE & HIERARCHY**
+Extract and maintain clear hierarchical relationships:
+- **Course**: Main course entity with Course_Name, Course_Code, Course_Title_Vietnamese, Course_Title_English
+- **Chapter**: Major divisions within course content
+- **Lesson**: Individual teaching units within chapters  
+- **Section**: Subsections within lessons
+- **Topic**: Specific subject matters within sections
+- **Content_Detail**: Detailed explanations of topics
 
-VALID RELATIONSHIPS (use exactly these):
-Hierarchical: BELONGS_TO, PART_OF, CONTAINS, INCLUDES, CONSISTS_OF, DIVIDED_INTO, ORGANIZED_INTO, COMPOSED_OF
-Educational: TEACHES, COVERS, ADDRESSES, FOCUSES_ON, DEVELOPS, BUILDS, STRENGTHENS, ADDRESSES_CLO, CONTRIBUTES_TO_PLO, MEASURES_PI
-People: TAUGHT_BY, INSTRUCTED_BY, COORDINATED_BY, SUPERVISED_BY, ASSESSED_BY, EVALUATED_BY
-Assessment: WEIGHTED_AS, CONTRIBUTES_TO_GRADE, DETERMINES_GRADE, ACCOUNTS_FOR
-Prerequisites: PREREQUISITE_FOR, CO_REQUISITE_WITH, BUILDS_ON, PREPARES_FOR, LEADS_TO, ENABLES
-Resources: USES, UTILIZES, REFERENCES, SUPPORTED_BY, ENHANCED_BY
-Time: SCHEDULED_FOR, OCCURS_IN, LASTS_FOR, CONCURRENT_WITH
+## 2. **LEARNING FRAMEWORK COMPONENTS**
+- **CLO (Course Learning Outcome)**: Specific measurable outcomes for the course
+- **PLO (Program Learning Outcome)**: Program-level learning outcomes that CLOs contribute to
+- **PI (Performance Indicator)**: Measurable indicators for evaluating outcomes
+- **Learning_Objective**: Specific goals for lessons or sections
+- **Learning_Outcome**: Expected results from learning activities
+- **Competency_Matrix**: Framework showing skill development mapping
 
-VIETNAMESE MAPPING:
-'Học phần'→Course, 'Mã học phần'→Course_Code, 'Tên học phần'→Course_Name, 'Chuẩn đầu ra'→Learning_Outcome, 'CLO'→CLO, 'PLO'→PLO, 'Mục tiêu'→Course_Objective, 'Phương pháp dạy học'→Teaching_Method, 'Thuyết giảng'→Lecture, 'Thảo luận'→Discussion, 'Bài tập'→Exercise, 'Thực hành'→Practice, 'Bài'→Lesson, 'Chương'→Chapter, 'Mục'→Section, 'Chủ đề'→Topic, 'Đánh giá'→Assessment_Method, 'Điểm'→Grade_Component, 'Giảng viên'→Instructor, 'Khoa'→Department, 'Trường'→University, 'Học kỳ'→Semester, 'Tài liệu'→Reference_Material, 'Phần mềm'→Software
+## 3. **COURSE ADMINISTRATIVE DETAILS**
+- **Course_Code**: Official course identifier (e.g., CMP3025)
+- **Credit_Hours**: Total credit value and breakdown (Theory_Hours, Practical_Hours)
+- **Knowledge_Block**: Classification (Required_Knowledge, Elective_Knowledge, General_Education, Professional_Education)
+- **Education_Level**: Degree level (Undergraduate, Graduate)
+- **Prerequisite**: Required prior courses
+- **Co_requisite**: Concurrent required courses
 
-PROPERTIES (NOT entities): course codes, credit hours, percentages, names, dates, phone numbers, lesson numbers, weights, specific values, measurements, identifiers
+## 4. **TEACHING & LEARNING METHODS**
+- **Teaching_Method**: Instructional approaches used
+- **Lecture**: Traditional classroom instruction
+- **Discussion**: Interactive dialogue sessions
+- **Exercise**: Practice activities
+- **Assignment**: Formal tasks for students
+- **Practice**: Hands-on application activities
+- **Lab_Work**: Laboratory-based learning
+- **Practical_Exercise**: Applied skill development activities
+- **Self_Study**: Independent learning components
+- **Tutorial**: Guided learning sessions
 
-EXAMPLES:
-- "Học phần CMP3025" → Course entity {course_code: "CMP3025"} + Course_Code entity, relationship: Course-INCLUDES→Course_Code
-- "CLO1: Áp dụng kiến thức HTML" → CLO entity {clo_number: "1", description: "Áp dụng kiến thức HTML"}
-- "BÀI 1: Chuẩn bị môi trường" → Lesson entity {lesson_number: "1", title: "Chuẩn bị môi trường"}, relationship: Course-CONTAINS→Lesson
-- "Giảng viên: Trần Đăng Khoa" → Instructor entity {name: "Trần Đăng Khoa"}, relationship: Instructor-TEACHES→Course
-- "Thuyết giảng và thảo luận" → Lecture entity + Discussion entity, relationships: Course-USES→Lecture, Course-USES→Discussion"""a
+## 5. **ASSESSMENT FRAMEWORK**
+- **Assessment_Method**: Overall evaluation approach
+- **Assessment_Component**: Individual assessment elements
+- **Grade_Component**: Specific grading elements
+- **Attendance_Grade**: Participation-based scoring
+- **Assignment_Grade**: Task-based evaluation
+- **Practical_Grade**: Hands-on skill assessment
+- **Final_Grade**: Comprehensive course evaluation
+- **Weight_Percentage**: Relative importance of each component
+- **Grading_Criteria**: Standards for evaluation
+
+## 6. **RESOURCES & MATERIALS**
+- **Textbook**: Primary instructional materials
+- **Main_Reference**: Core reference materials
+- **Supplementary_Reference**: Additional reading materials
+- **Software**: Required software tools
+- **Tool**: Utility applications needed
+- **Equipment**: Physical resources required
+- **Learning_Material**: Educational resources
+- **Digital_Resource**: Online learning materials
+
+## 7. **PEOPLE & ROLES**
+- **Instructor**: Primary teacher
+- **Course_Instructor**: Designated course leader
+- **Teaching_Assistant**: Support personnel
+- **Student**: Course participants
+- **Course_Coordinator**: Administrative coordinator
+- **Department_Head**: Academic supervisor
+- **Faculty_Dean**: Faculty leadership
+
+## 8. **INSTITUTIONAL STRUCTURE**
+- **University**: Higher education institution
+- **Faculty**: Academic division
+- **Department**: Specialized academic unit
+- **Program**: Degree program
+- **Major**: Area of specialization
+- **Academic_Unit**: Organizational subdivision
+
+## 9. **TEMPORAL & SCHEDULING**
+- **Academic_Year**: Annual academic period
+- **Semester**: Term within academic year
+- **Session**: Individual class meetings
+- **Duration**: Time length specifications
+- **Schedule**: Timing arrangements
+- **Timeline**: Sequential planning
+- **Class_Hours**: Allocated instruction time
+- **Contact_Hours**: Direct interaction time
+
+## 10. **STANDARDS & COMPLIANCE**
+- **Standard**: Academic benchmarks
+- **Requirement**: Mandatory specifications
+- **Regulation**: Institutional rules
+- **Policy**: Governing guidelines
+- **Quality_Assurance**: Standards maintenance
+- **Accreditation**: Official recognition
+
+---
+
+## **VALID ENTITY LABELS** (use exactly these from schema):
+```
+Course, Course_Name, Course_Code, Course_Title_Vietnamese, Course_Title_English, Credit_Hours, Theory_Hours, Practical_Hours, Knowledge_Block, Required_Knowledge, Elective_Knowledge, General_Education, Professional_Education, Education_Level, Learning_Outcome, CLO, PLO, PI, Performance_Indicator, Program_Learning_Outcome, Course_Learning_Outcome, Learning_Objective, Course_Objective, Course_Goal, Course_Purpose, Course_Aim, Educational_Goal, Knowledge_Goal, Skill_Goal, Competency_Goal, Competency_Matrix, Lesson, Chapter, Section, Topic, Content_Detail, Course_Content, Curriculum, Syllabus, Course_Description, Course_Summary, Lesson_Number, Lesson_Title, Lesson_Content, Teaching_Method, Lecture, Discussion, Exercise, Assignment, Practice, Lab_Work, Practical_Exercise, Group_Work, Presentation, Demonstration, Tutorial, Self_Study, Independent_Study, Assessment_Method, Assessment_Component, Grade_Component, Attendance_Grade, Participation_Grade, Assignment_Grade, Practical_Grade, Final_Grade, Weight_Percentage, Grading_Criteria, Evaluation_Method, Assessment_Task, Prerequisite, Co_requisite, Prior_Course, Parallel_Course, Required_Course, Foundation_Knowledge, Background_Knowledge, Reference_Material, Textbook, Main_Reference, Supplementary_Reference, Software, Tool, Equipment, Learning_Material, Reading_Material, Digital_Resource, Online_Resource, Instructor, Course_Instructor, Teaching_Assistant, Student, Lecturer, Course_Coordinator, Department_Head, Faculty_Dean, University, Faculty, Department, Program, Major, Institution, Academic_Unit, Educational_Institution, Academic_Year, Semester, Session, Period, Duration, Schedule, Timeline, Deadline, Class_Hours, Contact_Hours, Study_Guide, Learning_Guide, Student_Task, Student_Responsibility, Study_Requirement, Self_Study_Task, Preparation_Task, Review_Task, Standard, Requirement, Regulation, Policy, Guideline, Specification, Quality_Assurance, Accreditation, Contact_Information, Email, Phone, Office_Address, Office_Hours, Communication_Method, Consultation_Hours, Course_Management, Course_Administration, Course_Delivery, Course_Organization, Course_Planning, Course_Implementation
+```
+
+## **VALID RELATIONSHIPS** (use exactly these from schema):
+```
+BELONGS_TO, PART_OF, CONTAINS, INCLUDES, CONSISTS_OF, DIVIDED_INTO, ORGANIZED_INTO, STRUCTURED_AS, COMPOSED_OF, SUBDIVIDED_INTO, TEACHES, COVERS, ADDRESSES, FOCUSES_ON, EXPLORES, INTRODUCES, DEVELOPS, BUILDS, STRENGTHENS, ENHANCES, ACHIEVES, MEETS, SATISFIES, FULFILLS, ADDRESSES_CLO, CONTRIBUTES_TO_PLO, MEASURES_PI, EVALUATES_OUTCOME, ASSESSES_COMPETENCY, DEMONSTRATES_SKILL, DEFINES, ESTABLISHES, TARGETS, EQUIPS, FOSTERS, SHAPES, DRIVES, INFLUENCES, REQUIRES, PREREQUISITE_FOR, CO_REQUISITE_WITH, DEPENDS_ON, BUILDS_ON, FOLLOWS, PRECEDES, PREPARES_FOR, LEADS_TO, ENABLES, TAUGHT_BY, INSTRUCTED_BY, DELIVERED_BY, CONDUCTED_BY, SUPERVISED_BY, COORDINATED_BY, MANAGED_BY, FACILITATED_BY, GUIDED_BY, MENTORED_BY, ASSESSED_BY, EVALUATED_BY, GRADED_BY, MEASURED_BY, TESTED_BY, EXAMINED_BY, WEIGHTED_AS, ACCOUNTS_FOR, CONTRIBUTES_TO_GRADE, DETERMINES_GRADE, COVERS_TOPIC, DISCUSSES, EXPLAINS, DESCRIBES, ILLUSTRATES, DEMONSTRATES, PRESENTS, INTRODUCES_CONCEPT, REVIEWS, SUMMARIZES, USES, UTILIZES, EMPLOYS, APPLIES, REFERENCES, CITES, BASED_ON, SUPPORTED_BY, SUPPLEMENTED_BY, ENHANCED_BY, SCHEDULED_FOR, OCCURS_IN, TAKES_PLACE_IN, LASTS_FOR, DURATION_OF, STARTS_AT, ENDS_AT, CONCURRENT_WITH, SEQUENTIAL_TO, FOLLOWS_SCHEDULE, OFFERED_BY, MANAGED_BY_DEPARTMENT, OVERSEEN_BY, ADMINISTERED_BY, COORDINATED_BY_FACULTY, APPROVED_BY, REGULATED_BY, GOVERNED_BY, ACCREDITED_BY, STANDARDIZED_BY, ENROLLED_IN, ATTENDS, PARTICIPATES_IN, COMPLETES, SUBMITS, PERFORMS, PRACTICES, STUDIES, LEARNS, MASTERS, CONTACTS_VIA, COMMUNICATES_THROUGH, ACCESSIBLE_BY, REACHABLE_AT, AVAILABLE_DURING, RESPONDS_TO, CONSULTED_ABOUT, ADVISED_ON, SUPPORTED_IN, GUIDED_THROUGH, COMPLIES_WITH, ADHERES_TO, CONFORMS_TO, MEETS_STANDARD, FOLLOWS_GUIDELINE, IMPLEMENTS_POLICY, MAINTAINS_QUALITY, ENSURES_COMPLIANCE, VALIDATES, VERIFIES, APPLIED_IN, IMPLEMENTED_IN, PRACTICED_IN, EXERCISED_IN, DEMONSTRATED_IN, USED_FOR, EMPLOYED_FOR, UTILIZED_FOR, SERVES_PURPOSE, ACHIEVES_GOAL, ADDRESSED_BY, REFLECTED_IN, SUPPORTED_BY, ASSESSED_THROUGH, COVERED_IN, COMMUNICATED_TO, UNDERSTOOD_BY, DOCUMENTED_IN, STANDARDIZED_BY, EVALUATED_BY, REINFORCED_BY, VERIFIED_BY
+```
+
+---
+
+## **CRITICAL EXTRACTION GUIDELINES:**
+
+### **Hierarchical Structure Rules:**
+1. **Course** CONTAINS **Chapter** → **Chapter** BELONGS_TO **Course**
+2. **Chapter** DIVIDED_INTO **Lesson** → **Lesson** PART_OF **Chapter**  
+3. **Lesson** SUBDIVIDED_INTO **Section** → **Section** BELONGS_TO **Lesson**
+4. **Section** INCLUDES **Topic** → **Topic** PART_OF **Section**
+5. **Topic** COVERS **Content_Detail** → **Content_Detail** BELONGS_TO **Topic**
+
+### **Learning Outcome Relationships:**
+1. **CLO** CONTRIBUTES_TO_PLO **PLO**
+2. **PI** MEASURES_PI **Performance_Indicator**
+3. **Assessment_Method** EVALUATES_OUTCOME **CLO**
+4. **Learning_Objective** ACHIEVES **Course_Objective**
+5. **Course_Goal** ADDRESSES_CLO **CLO**
+
+### **Assessment Chain:**
+1. **Assessment_Component** CONTRIBUTES_TO_GRADE **Final_Grade**
+2. **Grade_Component** WEIGHTED_AS **Weight_Percentage**
+3. **Assessment_Task** ASSESSED_BY **Instructor**
+4. **Grading_Criteria** DETERMINES_GRADE **Final_Grade**
+
+### **Resource Dependencies:**
+1. **Course** USES **Textbook**, **Software**, **Equipment**
+2. **Lesson** UTILIZES **Learning_Material**
+3. **Exercise** EMPLOYS **Tool**
+4. **Student** STUDIES **Reference_Material**
+
+### **Administrative Structure:**
+1. **Course** OFFERED_BY **Faculty**
+2. **Department** MANAGES **Course**
+3. **Instructor** TEACHES **Course**
+4. **University** GOVERNS **Faculty**
+
+### **Prerequisites and Dependencies:**
+1. **Prior_Course** PREREQUISITE_FOR **Course**
+2. **Co_requisite** CO_REQUISITE_WITH **Course**
+3. **Foundation_Knowledge** ENABLES **Advanced_Learning**
+
+---
+
+## **EXTRACTION PRIORITIES:**
+
+### **HIGH PRIORITY** (Always extract):
+- Course identification (Course_Code, Course_Name)
+- Learning outcomes (CLO, PLO, PI)
+- Course structure (Chapter, Lesson, Content)
+- Assessment methods and grading
+- Prerequisites and requirements
+
+### **MEDIUM PRIORITY** (Extract when present):
+- Teaching methods and activities
+- Resources and materials
+- Scheduling and duration
+- Instructor information
+- Administrative details
+
+### **LOW PRIORITY** (Extract if clearly defined):
+- Detailed contact information
+- Specific software versions
+- Minor administrative procedures
+
+---
+
+## **SPECIAL HANDLING FOR VIETNAMESE EDUCATION:**
+
+### **Vietnamese-Specific Terms:**
+- "Đề cương học phần" → **Syllabus**
+- "Chuẩn đầu ra" → **Learning_Outcome**/**CLO**
+- "Chỉ số đo lường" → **Performance_Indicator**/**PI**
+- "Học phần tiên quyết" → **Prerequisite**
+- "Học phần song hành" → **Co_requisite**
+- "Phương pháp đánh giá" → **Assessment_Method**
+- "Thực hành" → **Practice**/**Lab_Work**
+- "Bài tập" → **Exercise**/**Assignment**
+
+### **Common Vietnamese Patterns:**
+- "BÀI [số]" → **Lesson** with **Lesson_Number**
+- "CHƯƠNG [số]" → **Chapter**
+- "CLO[số]" → **CLO** entity
+- "PLO[số]" → **PLO** entity
+- "PI[số]" → **PI** entity
+
+---
+
+## **QUALITY ASSURANCE RULES:**
+
+1. **Consistency**: Use exact label names from schema
+2. **Completeness**: Extract all relevant educational components
+3. **Accuracy**: Maintain correct hierarchical relationships
+4. **Relevance**: Focus on educational content, avoid administrative noise
+5. **Specificity**: Extract specific learning objectives and outcomes clearly
+6. **Traceability**: Maintain clear links between assessments and learning outcomes
+
+**Avoid extracting as separate entities**: 
+- Specific dates unless they're deadlines or important milestones
+- Version numbers of software unless critical
+- Page numbers, line numbers, formatting details
+- Generic administrative text without educational value
+- Repetitive contact information details
+"""
