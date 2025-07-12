@@ -183,87 +183,82 @@
   {
     "schema": "giaotrinh",
   "triplet": [
-  "institution-MANAGES->organization",
-  "organization-OFFERS->academicProgram",
-  "academicProgram-CONTAINS->Course",
-  "Publisher-PUBLISHES->Course",
-  "Author-AUTHORS->Course",
-  
-  "Course-CONTAINS->Chapter",
-  "Chapter-CONTAINS->Lesson", 
-  "Lesson-CONTAINS->Section",
-  
-  "Chapter-CONTAINS->content of chapter",
-  "Lesson-CONTAINS->content of Lesson",
-  "Section-CONTAINS->content of Section",
-  
-  "Topic-BELONGS_TO->content of chapter",
-  "Concept-BELONGS_TO->content of chapter",
-  "Example-BELONGS_TO->content of chapter",
-  "Exercise-BELONGS_TO->content of chapter",
-  "Definition-BELONGS_TO->content of chapter",
-  "code-BELONGS_TO->content of chapter",
-  
-  "Topic-BELONGS_TO->content of Lesson",
-  "Concept-BELONGS_TO->content of Lesson",
-  "Example-BELONGS_TO->content of Lesson",
-  "Exercise-BELONGS_TO->content of Lesson",
-  "Definition-BELONGS_TO->content of Lesson",
-  "code-BELONGS_TO->content of Lesson",
-  
-  "Topic-BELONGS_TO->content of Section",
-  "Concept-BELONGS_TO->content of Section",
-  "Example-BELONGS_TO->content of Section",
-  "Exercise-BELONGS_TO->content of Section",
-  "Definition-BELONGS_TO->content of Section",
-  "code-BELONGS_TO->content of Section",
-  
-  "Course-CONTAINS->Table of Contents",
-  "Table of Contents-CONTAINS->Chapter of Table of Contents",
-  "Chapter of Table of Contents-CONTAINS->Lesson of Table of Contents",
-  "Lesson of Table of Contents-CONTAINS->Section of Table of Contents",
-  
-  "Chapter of Table of Contents-REFERENCES->Chapter",
-  "Lesson of Table of Contents-REFERENCES->Lesson",
-  "Section of Table of Contents-REFERENCES->Section",
-  
-  "Course Description-DESCRIBES->Course",
-  "Course Content-DESCRIBES->Course",
-  "Prerequisites-DESCRIBES->Course",
-  "Course Requirements-DESCRIBES->Course",
-  "Assessment Methods-DESCRIBES->Course",
-  "Learning Approach-DESCRIBES->Course",
-  
-  "Teacher-TEACHES->Course",
-  "Student-LEARNS->Course",
-  "Course-REQUIRES->Prerequisites",
-  "Learning Objective-LEADS_TO->Learning Outcome",
-  "Learning Activity-ACHIEVES->Learning Objective",
-  
-  "Learning Resource-SUPPORTS->Learning Activity",
-  "Learning Material-SUPPORTS->Learning Activity",
-  "Learning Tool-SUPPORTS->Learning Method",
-  "Learning Platform-SUPPORTS->Learning Environment",
-  "Reference-SUPPORTS->Material",
-  "Example-SUPPORTS->Concept",
-  "code-DEMONSTRATES->Concept",
-  
-  "Student-USES->Learning Resource",
-  "Teacher-USES->Learning Material",
-  "Learning Activity-USES->Learning Tool",
-  "Course-USES->Learning Platform",
-  
-  "Chapter-BELONGS_TO->Course",
-  "Lesson-BELONGS_TO->Chapter",
-  "Section-BELONGS_TO->Lesson",
-  "content of chapter-BELONGS_TO->Chapter",
-  "content of Lesson-BELONGS_TO->Lesson",
-  "content of Section-BELONGS_TO->Section",
-  
-  "code-IMPLEMENTS->Concept",
-  "Exercise-EXTENDS->Example",
-  "Learning Tool-CONFIGURES->Learning Environment",
-  "code-IMPORTS->Learning Resource"
+ "Institution-MANAGES->Organization",
+    "Organization-OFFERS->AcademicProgram",
+    "AcademicProgram-HAS_COURSE->Course",
+    "Publisher-PUBLISHES->Course",
+    "Author-AUTHORS->Course",
+    
+    "Course-HAS_TOPIC->Topic",
+    "Topic-HAS_CONCEPT->Concept",
+    "Concept-HAS_SECTION->Section",
+
+    "Topic-CONTAINS->ContentOfTopic",
+    "Concept-CONTAINS->ContentOfConcept",
+    "Section-CONTAINS->ContentOfSection",
+
+    "Example-BELONGS_TO->ContentOfTopic",
+    "Exercise-BELONGS_TO->ContentOfTopic",
+    "Definition-BELONGS_TO->ContentOfTopic",
+    "Code-BELONGS_TO->ContentOfTopic",
+
+    "Example-BELONGS_TO->ContentOfConcept",
+    "Exercise-BELONGS_TO->ContentOfConcept",
+    "Definition-BELONGS_TO->ContentOfConcept",
+    "Code-BELONGS_TO->ContentOfConcept",
+
+    "Example-BELONGS_TO->ContentOfSection",
+    "Exercise-BELONGS_TO->ContentOfSection",
+    "Definition-BELONGS_TO->ContentOfSection",
+    "Code-BELONGS_TO->ContentOfSection",
+
+    "Course-CONTAINS->TableOfContents",
+    "TableOfContents-CONTAINS->TopicOfTableOfContents",
+    "TopicOfTableOfContents-CONTAINS->ConceptOfTableOfContents",
+    "ConceptOfTableOfContents-CONTAINS->SectionOfTableOfContents",
+
+    "TopicOfTableOfContents-REFERENCES->Topic",
+    "ConceptOfTableOfContents-REFERENCES->Concept",
+    "SectionOfTableOfContents-REFERENCES->Section",
+
+    "CourseDescription-DESCRIBES->Course",
+    "CourseContent-DESCRIBES->Course",
+    "Prerequisites-DESCRIBES->Course",
+    "CourseRequirements-DESCRIBES->Course",
+    "AssessmentMethods-DESCRIBES->Course",
+    "LearningApproach-DESCRIBES->Course",
+
+    "Teacher-TEACHES->Course",
+    "Student-LEARNS->Course",
+
+    "Course-REQUIRES->Prerequisites",
+    "LearningObjective-LEADS_TO->LearningOutcome",
+    "LearningActivity-ACHIEVES->LearningObjective",
+
+    "LearningResource-SUPPORTS->LearningActivity",
+    "LearningMaterial-SUPPORTS->LearningActivity",
+    "LearningTool-SUPPORTS->LearningMethod",
+    "LearningPlatform-SUPPORTS->LearningEnvironment",
+    "Reference-SUPPORTS->Material",
+    "Example-SUPPORTS->Definition",
+    "Code-DEMONSTRATES->Definition",
+
+    "Student-USES->LearningResource",
+    "Teacher-USES->LearningMaterial",
+    "LearningActivity-USES->LearningTool",
+    "Course-USES->LearningPlatform",
+
+    "Topic-BELONGS_TO->Course",
+    "Concept-BELONGS_TO->Topic",
+    "Section-BELONGS_TO->Concept",
+    "ContentOfTopic-BELONGS_TO->Topic",
+    "ContentOfConcept-BELONGS_TO->Concept",
+    "ContentOfSection-BELONGS_TO->Section",
+
+    "Code-IMPLEMENTS->Definition",
+    "Exercise-EXTENDS->Example",
+    "LearningTool-CONFIGURES->LearningEnvironment",
+    "Code-IMPORTS->LearningResource"
 ]
 
   },

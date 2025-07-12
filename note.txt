@@ -1,225 +1,366 @@
-"labels": [
-  "Course", 
-  "Chapter",
-  "content of chapter",
-  "Lesson",
-  "content of Lesson",
-  "Section",
-  "content of Section",
-  "Topic",
-  "code",
-  "Concept",
-  "Example",
-  "Exercise",
-  "Definition",
-  "Teacher",
-  "Student",
-  "Author",
-  "Material",
-  "Reference",
-  "Table of Contents",
-  "Chapter of Table of Contents",
-  "Lesson of Table of Contents",
-  "Section of Table of Contents",
-  "Learning Objective",
-  "Learning Outcome",
-  "Learning Activity",
-  "Learning Resource",
-  "Learning Material",
-  "Learning Method",
-  "Learning Tool",
-  "Learning Environment",
-  "Learning Platform",
-  "Course Description",
-  "Course Content",
-  "Prerequisites",
-  "Course Requirements",
-  "Learning Approach",
-  "Assessment Methods",
-  "Publisher",
-  "Edition",
-  "organization",
-  "institution",
-  "academicProgram"
-],
-"relationshipTypes": [
-  "CONTAINS",
-  "BELONGS_TO", 
-  "REFERENCES",
-  "DESCRIBES",
-  "TEACHES",
-  "LEARNS",
-  "AUTHORS",
-  "PUBLISHES",
-  "MANAGES",
-  "OFFERS",
-  "REQUIRES",
-  "ACHIEVES",
-  "USES",
-  "SUPPORTS",
-  "LEADS_TO",
-  "IMPLEMENTS",
-  "EXTENDS", 
-  "CONFIGURES",
-  "DEMONSTRATES",
-  "IMPORTS"
-],
-  "schema": "giaotrinh"
-    "schema": "giaotrinh",
-  "triplet": [
-  "institution-MANAGES->organization",
-  "organization-OFFERS->academicProgram",
-  "academicProgram-CONTAINS->Course",
-  "Publisher-PUBLISHES->Course",
-  "Author-AUTHORS->Course",
-  
-  "Course-CONTAINS->Chapter",
-  "Chapter-CONTAINS->Lesson", 
-  "Lesson-CONTAINS->Section",
-  
-  "Chapter-CONTAINS->content of chapter",
-  "Lesson-CONTAINS->content of Lesson",
-  "Section-CONTAINS->content of Section",
-  
-  "Topic-BELONGS_TO->content of chapter",
-  "Concept-BELONGS_TO->content of chapter",
-  "Example-BELONGS_TO->content of chapter",
-  "Exercise-BELONGS_TO->content of chapter",
-  "Definition-BELONGS_TO->content of chapter",
-  "code-BELONGS_TO->content of chapter",
-  
-  "Topic-BELONGS_TO->content of Lesson",
-  "Concept-BELONGS_TO->content of Lesson",
-  "Example-BELONGS_TO->content of Lesson",
-  "Exercise-BELONGS_TO->content of Lesson",
-  "Definition-BELONGS_TO->content of Lesson",
-  "code-BELONGS_TO->content of Lesson",
-  
-  "Topic-BELONGS_TO->content of Section",
-  "Concept-BELONGS_TO->content of Section",
-  "Example-BELONGS_TO->content of Section",
-  "Exercise-BELONGS_TO->content of Section",
-  "Definition-BELONGS_TO->content of Section",
-  "code-BELONGS_TO->content of Section",
-  
-  "Course-CONTAINS->Table of Contents",
-  "Table of Contents-CONTAINS->Chapter of Table of Contents",
-  "Chapter of Table of Contents-CONTAINS->Lesson of Table of Contents",
-  "Lesson of Table of Contents-CONTAINS->Section of Table of Contents",
-  
-  "Chapter of Table of Contents-REFERENCES->Chapter",
-  "Lesson of Table of Contents-REFERENCES->Lesson",
-  "Section of Table of Contents-REFERENCES->Section",
-  
-  "Course Description-DESCRIBES->Course",
-  "Course Content-DESCRIBES->Course",
-  "Prerequisites-DESCRIBES->Course",
-  "Course Requirements-DESCRIBES->Course",
-  "Assessment Methods-DESCRIBES->Course",
-  "Learning Approach-DESCRIBES->Course",
-  
-  "Teacher-TEACHES->Course",
-  "Student-LEARNS->Course",
-  "Course-REQUIRES->Prerequisites",
-  "Learning Objective-LEADS_TO->Learning Outcome",
-  "Learning Activity-ACHIEVES->Learning Objective",
-  
-  "Learning Resource-SUPPORTS->Learning Activity",
-  "Learning Material-SUPPORTS->Learning Activity",
-  "Learning Tool-SUPPORTS->Learning Method",
-  "Learning Platform-SUPPORTS->Learning Environment",
-  "Reference-SUPPORTS->Material",
-  "Example-SUPPORTS->Concept",
-  "code-DEMONSTRATES->Concept",
-  
-  "Student-USES->Learning Resource",
-  "Teacher-USES->Learning Material",
-  "Learning Activity-USES->Learning Tool",
-  "Course-USES->Learning Platform",
-  
-  "Chapter-BELONGS_TO->Course",
-  "Lesson-BELONGS_TO->Chapter",
-  "Section-BELONGS_TO->Lesson",
-  "content of chapter-BELONGS_TO->Chapter",
-  "content of Lesson-BELONGS_TO->Lesson",
-  "content of Section-BELONGS_TO->Section",
-  
-  "code-IMPLEMENTS->Concept",
-  "Exercise-EXTENDS->Example",
-  "Learning Tool-CONFIGURES->Learning Environment",
-  "code-IMPORTS->Learning Resource"
-]
-ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize educational entities from this Java Spring Boot course material while maintaining proper hierarchical relationships. Focus on extracting:
+{
+  "schema": "giaotrinh",
+  "labels": [
+    "Course",
+    "Topic",
+    "ContentOfTopic",
+    "Concept",
+    "ContentOfConcept",
+    "Section",
+    "ContentOfSection",
+    "Code",
+    "Example",
+    "Exercise",
+    "Definition",
+    "Teacher",
+    "Student",
+    "Author",
+    "Material",
+    "Reference",
+    "TableOfContents",
+    "TopicOfTableOfContents",
+    "ConceptOfTableOfContents",
+    "SectionOfTableOfContents",
+    "LearningObjective",
+    "LearningOutcome",
+    "LearningActivity",
+    "LearningResource",
+    "LearningMaterial",
+    "LearningMethod",
+    "LearningTool",
+    "LearningEnvironment",
+    "LearningPlatform",
+    "CourseDescription",
+    "CourseContent",
+    "Prerequisites",
+    "CourseRequirements",
+    "LearningApproach",
+    "AssessmentMethods",
+    "Publisher",
+    "Edition",
+    "Organization",
+    "Institution",
+    "AcademicProgram"
+  ],
+  "relationshipTypes": [
+    "HAS_TOPIC",
+    "HAS_CONCEPT",
+    "HAS_SECTION",
+    "HAS_CO",
+    "CONTAINS",
+    "BELONGS_TO",
+    "REFERENCES",
+    "DESCRIBES",
+    "TEACHES",
+    "LEARNS",
+    "AUTHORS",
+    "PUBLISHES",
+    "MANAGES",
+    "OFFERS",
+    "REQUIRES",
+    "ACHIEVES",
+    "USES",
+    "SUPPORTS",
+    "LEADS_TO",
+    "IMPLEMENTS",
+    "EXTENDS",
+    "CONFIGURES",
+    "DEMONSTRATES",
+    "IMPORTS"
+  ],
+  "triplets": [
+    "Institution-MANAGES->Organization",
+    "Organization-OFFERS->AcademicProgram",
+    "AcademicProgram-HAS_COURSE->Course",
+    "Publisher-PUBLISHES->Course",
+    "Author-AUTHORS->Course",
+    
+    "Course-HAS_TOPIC->Topic",
+    "Topic-HAS_CONCEPT->Concept",
+    "Concept-HAS_SECTION->Section",
 
-1. **Educational Structure**: Course, chapters, lessons, sections, topics and their hierarchical relationships using CONTAINS/BELONGS_TO
-2. **Learning Components**: Concepts, definitions, examples, exercises, and code snippets as distinct entities
-3. **Technical Entities**: Framework components (Spring Boot, JPA, etc.), programming constructs (classes, methods, annotations), and technologies mentioned
-4. **People and Organizations**: Authors, teachers, students, institutions involved
+    "Topic-CONTAINS->ContentOfTopic",
+    "Concept-CONTAINS->ContentOfConcept",
+    "Section-CONTAINS->ContentOfSection",
 
-**Important Guidelines**:
-- Treat specific values (version numbers, file paths, URLs, configuration values) as properties of their parent entities, not separate nodes
-- Code blocks should be extracted as 'code' entities with their purpose/context, not individual code lines
-- Learning objectives and outcomes should be separate entities linked to their respective lessons
-- Maintain the course's hierarchical structure (Course → Chapter → Lesson → Section → Topic)
-- Dependencies and technical relationships should use appropriate technical relationship types (IMPLEMENTS, EXTENDS, CONFIGURES, etc.)
+    "Example-BELONGS_TO->ContentOfTopic",
+    "Exercise-BELONGS_TO->ContentOfTopic",
+    "Definition-BELONGS_TO->ContentOfTopic",
+    "Code-BELONGS_TO->ContentOfTopic",
 
-**Avoid extracting as separate entities**: Line numbers, specific dates, port numbers, file sizes, individual code statements, or granular technical parameters unless they represent key concepts being taught."""
+    "Example-BELONGS_TO->ContentOfConcept",
+    "Exercise-BELONGS_TO->ContentOfConcept",
+    "Definition-BELONGS_TO->ContentOfConcept",
+    "Code-BELONGS_TO->ContentOfConcept",
+
+    "Example-BELONGS_TO->ContentOfSection",
+    "Exercise-BELONGS_TO->ContentOfSection",
+    "Definition-BELONGS_TO->ContentOfSection",
+    "Code-BELONGS_TO->ContentOfSection",
+
+    "Course-CONTAINS->TableOfContents",
+    "TableOfContents-CONTAINS->TopicOfTableOfContents",
+    "TopicOfTableOfContents-CONTAINS->ConceptOfTableOfContents",
+    "ConceptOfTableOfContents-CONTAINS->SectionOfTableOfContents",
+
+    "TopicOfTableOfContents-REFERENCES->Topic",
+    "ConceptOfTableOfContents-REFERENCES->Concept",
+    "SectionOfTableOfContents-REFERENCES->Section",
+
+    "CourseDescription-DESCRIBES->Course",
+    "CourseContent-DESCRIBES->Course",
+    "Prerequisites-DESCRIBES->Course",
+    "CourseRequirements-DESCRIBES->Course",
+    "AssessmentMethods-DESCRIBES->Course",
+    "LearningApproach-DESCRIBES->Course",
+
+    "Teacher-TEACHES->Course",
+    "Student-LEARNS->Course",
+
+    "Course-REQUIRES->Prerequisites",
+    "LearningObjective-LEADS_TO->LearningOutcome",
+    "LearningActivity-ACHIEVES->LearningObjective",
+
+    "LearningResource-SUPPORTS->LearningActivity",
+    "LearningMaterial-SUPPORTS->LearningActivity",
+    "LearningTool-SUPPORTS->LearningMethod",
+    "LearningPlatform-SUPPORTS->LearningEnvironment",
+    "Reference-SUPPORTS->Material",
+    "Example-SUPPORTS->Definition",
+    "Code-DEMONSTRATES->Definition",
+
+    "Student-USES->LearningResource",
+    "Teacher-USES->LearningMaterial",
+    "LearningActivity-USES->LearningTool",
+    "Course-USES->LearningPlatform",
+
+    "Topic-BELONGS_TO->Course",
+    "Concept-BELONGS_TO->Topic",
+    "Section-BELONGS_TO->Concept",
+    "ContentOfTopic-BELONGS_TO->Topic",
+    "ContentOfConcept-BELONGS_TO->Concept",
+    "ContentOfSection-BELONGS_TO->Section",
+
+    "Code-IMPLEMENTS->Definition",
+    "Exercise-EXTENDS->Example",
+    "LearningTool-CONFIGURES->LearningEnvironment",
+    "Code-IMPORTS->LearningResource"
+  ]
+}
 
 
-
-
-
-
+```python
 ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize educational entities from course materials while maintaining proper hierarchical relationships. Focus on extracting:
 
-1. **Educational Structure**: Course, chapters, lessons, sections, topics and their hierarchical relationships using CONTAINS/BELONGS_TO
-2. **Learning Components**: Concepts, definitions, examples, exercises, and code/formula snippets as distinct entities  
-3. **Technical Entities**: Framework components, programming constructs, methodologies, tools, and technologies mentioned
-4. **People and Organizations**: Authors, teachers, students, institutions involved
-5. **Learning Objectives and Outcomes**: Clearly defined learning goals and expected outcomes for each lesson or section
+1. **Educational Structure**: Course, topics, concepts, sections and their hierarchical relationships using specific hierarchical relationship types
+
+**HIERARCHICAL STRUCTURE EXPLANATION**:
+The educational content follows a strict 4-level hierarchy with specific relationship types:
+
+**Level 1 - Course**: The entire course/subject (e.g., "Machine Learning Fundamentals", "Database Systems")
+**Level 2 - Topic**: Major subject areas within the course (e.g., "Bài 1", "Lesson 1", "Chapter 1") 
+**Level 3 - Concept**: Specific learning units within a topic (e.g., "1.1", "1.2", "1.3")
+**Level 4 - Section**: Detailed breakdowns within a concept (e.g., "1.1.1", "1.1.2", "1.2.1")
+
+**HIERARCHICAL RELATIONSHIPS**:
+```
+institution → organization → academicProgram → Course → Topic → Concept → Section
+    MANAGES      OFFERS        HAS_COURSE    HAS_TOPIC  HAS_CONCEPT  HAS_SECTION
+```
+
+**NUMBERING SYSTEM EXAMPLES**:
+```
+Course: "Lập trình Java cơ bản"
+├── Topic: "Bài 1: Giới thiệu Java" (Course HAS_TOPIC Topic)
+│   ├── Concept: "1.1 Lịch sử và đặc điểm Java" (Topic HAS_CONCEPT Concept)
+│   │   ├── Section: "1.1.1 Nguồn gốc của Java" (Concept HAS_SECTION Section)
+│   │   ├── Section: "1.1.2 Đặc điểm chính của Java"
+│   │   └── Section: "1.1.3 Ưu điểm của Java"
+│   ├── Concept: "1.2 Cài đặt môi trường Java"
+│   │   ├── Section: "1.2.1 Cài đặt JDK"
+│   │   └── Section: "1.2.2 Cài đặt IDE"
+│   └── Concept: "1.3 Chương trình Java đầu tiên"
+│       ├── Section: "1.3.1 Cấu trúc chương trình"
+│       └── Section: "1.3.2 Biên dịch và chạy"
+├── Topic: "Bài 2: Cú pháp cơ bản"
+│   ├── Concept: "2.1 Biến và kiểu dữ liệu"
+│   └── Concept: "2.2 Toán tử và biểu thức"
+```
+
+**IDENTIFICATION GUIDELINES**:
+- **Course**: Usually mentioned in course title, syllabus header, or main subject name
+- **Topic**: Broad thematic areas, often numbered as "Bài X", "Lesson X", "Chapter X" (typically 5-15 topics per course)
+- **Concept**: Specific learning units, often numbered as "X.Y" format (typically 3-8 concepts per topic)  
+- **Section**: Detailed sub-components, often numbered as "X.Y.Z" format (typically 2-5 sections per concept)
+
+**CONTENT RELATIONSHIP**:
+- Each level has content: "content of topic", "content of Concept", "content of Section"
+- Content includes the actual learning material, text, explanations at that level using CONTAINS relationship
+- Examples, Exercises, Definitions, code belong to the content of their respective level using BELONGS_TO relationship
+
+2. **Learning Components**: Definitions, examples, exercises, and code/formula snippets as distinct entities  
+3. **People and Organizations**: Authors, teachers, students, institutions involved
+5. **Learning Objectives and Outcomes**: Clearly defined learning goals and expected outcomes for each concept or section
 6. **Resources**: Links to external resources, references, or supplementary materials
-7. **Dependencies**: Relationships between different components, such as prerequisites or dependencies between lessons or sections
-8. **Course Metadata**: Course Description, Course Content(nội dung môn học), Course Requirements, Learning Approach, Assessment Methods
-9. **Navigation Structure**: Table of Contents, Chapter of Table of Contents, Lesson of Table of Contents, Section of Table of Contents
+7. **Dependencies**: Relationships between different components, such as prerequisites or dependencies between concepts or sections
+8. **Course Metadata**: Course Description, Course Content, Prerequisites, Course Requirements, Learning Approach, Assessment Methods, Learning Objective, Learning Outcome, Learning Method
+9. **Navigation Structure**: Table of Contents, Topic of Table of Contents, Concept of Table of Contents, Section of Table of Contents
+10.**Technical Entities**: Framework components, programming constructs, methodologies, tools, and technologies mentioned
 
 **VALID ENTITY LABELS (use exactly these)**:
-Course Structure: Course, Chapter, content of chapter, Lesson, content of Lesson, Section, content of Section, Topic
-Content Elements: code, Concept, Example, Exercise, Definition
+Course Structure: Course, Topic, content of topic, Concept, content of Concept, Section, content of Section
+Content Elements: code, Example, Exercise, Definition
 Educational Components: Learning Objective, Learning Outcome, Learning Activity, Learning Resource, Learning Material, Learning Method, Learning Tool, Learning Environment, Learning Platform, Course Description, Course Content, Prerequisites, Course Requirements, Learning Approach, Assessment Methods
 People & Organizations: Teacher, Student, Author, Publisher, organization, institution, academicProgram
 Resources: Material, Reference
-Navigation: Table of Contents, Chapter of Table of Contents, Lesson of Table of Contents, Section of Table of Contents
+Navigation: Table of Contents, Topic of Table of Contents, Concept of Table of Contents, Section of Table of Contents
 Publication: Edition
 
 **VALID RELATIONSHIPS (use exactly these)**:
-- **CONTAINS**: Parent contains child element (Course CONTAINS Chapter, Chapter CONTAINS Lesson)
-- **BELONGS_TO**: Child belongs to parent (Lesson BELONGS_TO Chapter, Topic BELONGS_TO Section)
-- **REFERENCES**: Navigation/index points to content (Chapter of Table of Contents REFERENCES Chapter)
+
+**Hierarchical Relationships:**
+- **HAS_TOPIC**: Course has topics (Course HAS_TOPIC Topic)
+- **HAS_CONCEPT**: Topic has concepts (Topic HAS_CONCEPT Concept)
+- **HAS_SECTION**: Concept has sections (Concept HAS_SECTION Section)
+- **HAS_COURSE**: Academic program has courses (academicProgram HAS_COURSE Course)
+
+**Content Relationships:**
+- **CONTAINS**: Parent contains content element 
+  * Topic CONTAINS "content of topic"
+  * Concept CONTAINS "content of Concept"  
+  * Section CONTAINS "content of Section"
+  * Course CONTAINS "Table of Contents"
+  * Table of Contents CONTAINS navigation elements
+
+- **BELONGS_TO**: Child belongs to parent content
+  * "content of topic" BELONGS_TO Topic
+  * "content of Concept" BELONGS_TO Concept
+  * "content of Section" BELONGS_TO Section
+  * Topic BELONGS_TO Course
+  * Concept BELONGS_TO Topic  
+  * Section BELONGS_TO Concept
+  * Example/Exercise/Definition/code BELONGS_TO their respective content level
+
+**Other Relationships:**
+- **REFERENCES**: Navigation/index points to content (Topic of Table of Contents REFERENCES Topic)
 - **DESCRIBES**: Metadata describes main entity (Course Description DESCRIBES Course)
-- **TEACHES**: Instructor relationship (Teacher TEACHES Course, Course TEACHES Concept)
-- **LEARNS**: Student relationship (Student LEARNS Course, Student LEARNS Concept)
+- **TEACHES**: Instructor relationship (Teacher TEACHES Course)
+- **LEARNS**: Student relationship (Student LEARNS Course)
 - **AUTHORS**: Authorship (Author AUTHORS Course, Author AUTHORS Material)
-- **PUBLISHES**: Publishing relationship (Publisher PUBLISHES Course, institution PUBLISHES Material)
-- **MANAGES**: Administrative control (institution MANAGES organization, organization MANAGES academicProgram)
-- **OFFERS**: Provision relationship (academicProgram OFFERS Course, institution OFFERS Course)
-- **REQUIRES**: Prerequisite relationship (Course REQUIRES Prerequisites, Lesson REQUIRES Learning Resource)
+- **PUBLISHES**: Publishing relationship (Publisher PUBLISHES Course)
+- **MANAGES**: Administrative control (institution MANAGES organization)
+- **OFFERS**: Provision relationship (organization OFFERS academicProgram)
+- **REQUIRES**: Prerequisite relationship (Course REQUIRES Prerequisites)
 - **ACHIEVES**: Goal attainment (Learning Activity ACHIEVES Learning Objective)
-- **USES**: Utilization relationship (Course USES Learning Tool, Student USES Learning Material)
-- **SUPPORTS**: Supporting relationship (Learning Resource SUPPORTS Learning Activity, Material SUPPORTS Example)
+- **USES**: Utilization relationship (Student USES Learning Resource, Teacher USES Learning Material, Learning Activity USES Learning Tool, Course USES Learning Platform)
+- **SUPPORTS**: Supporting relationship (Learning Resource SUPPORTS Learning Activity, Learning Material SUPPORTS Learning Activity, Learning Tool SUPPORTS Learning Method, Learning Platform SUPPORTS Learning Environment, Reference SUPPORTS Material, Example SUPPORTS Definition)
 - **LEADS_TO**: Sequential relationship (Learning Objective LEADS_TO Learning Outcome)
-- **IMPLEMENTS**: Technical implementation (code IMPLEMENTS Concept, Exercise IMPLEMENTS Learning Method)
-- **EXTENDS**: Technical extension (Concept EXTENDS Definition, Learning Method EXTENDS Learning Approach)
+- **IMPLEMENTS**: Technical implementation (code IMPLEMENTS Definition)
+- **EXTENDS**: Technical extension (Exercise EXTENDS Example)
 - **CONFIGURES**: Technical configuration (Learning Tool CONFIGURES Learning Environment)
-- **DEMONSTRATES**: Illustration relationship (Example DEMONSTRATES Concept, code DEMONSTRATES Definition)
-- **IMPORTS**: Technical dependency (code IMPORTS Learning Resource, Learning Tool IMPORTS Material)
+- **DEMONSTRATES**: Illustration relationship (code DEMONSTRATES Definition)
+- **IMPORTS**: Technical dependency (code IMPORTS Learning Resource)
 
 **Important Guidelines**: 
-- Treat specific values (version numbers, file paths, URLs, configuration values, measurements, dates) as properties of their parent entities, not separate nodes
-- Code/formula blocks should be extracted as 'code' entities with their purpose/context, not individual lines
-- Learning objectives and outcomes should be separate entities linked to their respective lessons
-- Maintain the course's hierarchical structure (Course → Chapter → Lesson → Section → Topic)
-- Table of Contents elements should reference their corresponding actual content (Chapter of Table of Contents REFERENCES Chapter, etc.)
-- Course metadata entities (Course Description, Course Requirements, Assessment Methods) should be linked to the main Course entity using DESCRIBES relationship
-- Dependencies and technical relationships should use appropriate relationship types (IMPLEMENTS, EXTENDS, CONFIGURES, DEMONSTRATES, etc.)
 
-**Avoid extracting as separate entities**: Line numbers, specific dates, page numbers, file sizes, individual statements/formulas, or granular technical parameters unless they represent key concepts being taught."""
+**STRICT HIERARCHY WITH SPECIFIC RELATIONSHIPS**:
+- **Institution Level**: institution MANAGES organization
+- **Organization Level**: organization OFFERS academicProgram  
+- **Program Level**: academicProgram HAS_COURSE Course
+- **Course Level**: Course HAS_TOPIC Topic (never directly has Concept or Section)
+- **Topic Level**: Topic HAS_CONCEPT Concept (never directly has Section)  
+- **Concept Level**: Concept HAS_SECTION Section
+- **Content Relationships**: Use CONTAINS for content and BELONGS_TO for reverse relationships
+
+**CONTENT DISTRIBUTION**: 
+- Examples, Exercises, Definitions, code BELONGS_TO their respective content level
+- "content of topic" contains material that introduces/overviews the entire topic
+- "content of Concept" contains material specific to that learning unit
+- "content of Section" contains detailed explanations of section components
+
+**NAVIGATION STRUCTURE**:
+- Course CONTAINS Table of Contents
+- Table of Contents CONTAINS Topic of Table of Contents
+- Topic of Table of Contents CONTAINS Concept of Table of Contents  
+- Concept of Table of Contents CONTAINS Section of Table of Contents
+- Navigation elements REFERENCES their corresponding content (Topic of Table of Contents REFERENCES Topic, etc.)
+
+**METADATA RELATIONSHIPS**:
+- Course Description, Course Content, Prerequisites, Course Requirements, Assessment Methods, Learning Approach, Learning Objective, Learning Outcome, Learning Method all DESCRIBE Course
+
+**COURSE METADATA HANDLING**:
+Course metadata should be extracted as separate entities that DESCRIBE the main Course entity. These are typically found in:
+- **Course Introduction/Overview sections**: "MÔ TẢ MÔN HỌC", "Tóm tắt nội dung", "Course Overview"
+- **Prerequisite sections**: "KIẾN THỨC TIỀN ĐỀ", "Prerequisites", "Required Background"  
+- **Requirements sections**: "YÊU CẦU MÔN HỌC", "Course Requirements", "Student Requirements"
+- **Content outline sections**: "NỘI DUNG MÔN HỌC", "Course Content", "Syllabus"
+- **Learning approach sections**: "CÁCH TIẾP NHẬN NỘI DUNG", "Learning Approach", "Teaching Method"
+- **Assessment sections**: "PHƯƠNG PHÁP ĐÁNH GIÁ", "Assessment Methods", "Evaluation"
+- **Learning objectives/outcomes**: Usually at beginning of chapters/lessons
+
+**IMPORTANT**: Do NOT extract these metadata descriptions as Topics, Concepts, or Sections. They are COURSE-LEVEL information that describes the entire course, not instructional content.
+
+**LEARNING RELATIONSHIPS**:
+- Learning Objective LEADS_TO Learning Outcome
+- Learning Activity ACHIEVES Learning Objective
+- Various SUPPORTS relationships between learning components
+- Teacher TEACHES Course, Student LEARNS Course
+
+**PRACTICAL EXAMPLES**:
+```
+Course: "Thực hành lập trình ứng dụng Java"
+
+COURSE METADATA (extract as separate entities that DESCRIBE Course):
+├── Course Description: "Học phần cung cấp cho sinh viên kiến thức và kỹ năng cần thiết để phát triển các ứng dụng web..."
+├── Prerequisites: "Trước khi bắt đầu môn học này, sinh viên cần có những kiến thức tiền đề sau..."  
+├── Course Requirements: "Người học phải dự học đầy đủ các buổi lên lớp..."
+├── Learning Approach: "Để học tốt môn này, người học cần ôn tập các bài đã học..."
+├── Assessment Methods: "Môn học được đánh giá gồm: Điểm quá trình (50%), Điểm thi cuối kỳ (50%)..."
+└── Course Content: "Bài 1. Chuẩn bị môi trường..., Bài 2. Tạo Cơ sở Dữ liệu..."
+
+INSTRUCTIONAL CONTENT (extract using hierarchy):
+├── Topic: "BÀI 1. CHUẨN BỊ MÔI TRƯỜNG PHÁT TRIỂN ỨNG DỤNG VỚI SPRING BOOT VÀ CÁC THAO TÁC CƠ BẢN"
+│   ├── Concept: "1.1 Cài đặt IntelliJ IDEA"
+│   │   ├── Section: "Download và cài đặt"
+│   │   └── Section: "Cấu hình ban đầu"
+│   ├── Concept: "1.2 Cài đặt Java 22"
+│   └── Concept: "1.3 Tạo dự án Spring Boot"
+├── Topic: "BÀI 2. TẠO CƠ SỞ DỮ LIỆU CHO WEBSITE BÁN HÀNG"
+│   ├── Concept: "2.1 Cài đặt Laragon để quản lý cơ sở dữ liệu MySQL"
+│   └── Concept: "2.2 Thêm các Dependency"
+```
+
+**KEY DISTINCTION**:
+- Course metadata appears in **introduction/overview sections** and describes the **entire course**
+- Instructional content appears in **numbered lessons/chapters** and contains **actual teaching material**
+
+**VALIDATION CHECKLIST**:
+✅ Use HAS_TOPIC, HAS_CONCEPT, HAS_SECTION for main hierarchy
+✅ Use CONTAINS for content relationships  
+✅ Use BELONGS_TO for reverse content relationships
+✅ Every navigation element REFERENCES its corresponding content
+✅ All metadata entities DESCRIBE the Course
+✅ Learning components use appropriate SUPPORTS, ACHIEVES, LEADS_TO relationships
+✅ Examples, Exercises, Definitions, code belong to content entities, not directly to structural entities
+✅ **METADATA VALIDATION**: Course metadata entities (Course Description, Prerequisites, etc.) are separate from instructional hierarchy
+✅ **CONTENT VALIDATION**: Only numbered lessons/chapters/sections become Topics/Concepts/Sections
+✅ **RELATIONSHIP VALIDATION**: Course metadata uses DESCRIBES relationship, not hierarchical relationships
+
+**COMMON MISTAKES TO AVOID**:
+- ❌ Using CONTAINS instead of HAS_TOPIC/HAS_CONCEPT/HAS_SECTION for main hierarchy
+- ❌ Course directly HAS_CONCEPT or HAS_SECTION (must go through Topic level)
+- ❌ Topic directly HAS_SECTION (must go through Concept level)
+- ❌ Missing "content of X" entities for each hierarchy level
+- ❌ Not using specific hierarchical relationships (HAS_TOPIC, HAS_CONCEPT, HAS_SECTION)
+- ❌ Connecting Examples/Exercises/Definitions directly to structural entities instead of content entities
+- ❌ **CRITICAL**: Treating course metadata (Course Description, Prerequisites, Learning Objectives in course intro) as Topics or Concepts
+- ❌ **CRITICAL**: Extracting course overview information as instructional content
+- ❌ **CRITICAL**: Confusing course-level learning objectives with lesson-level learning objectives
+
+**METADATA vs CONTENT DISTINCTION**:
+- **Course Metadata**: Overall course information, prerequisites, general learning outcomes for entire course
+- **Instructional Content**: Actual teaching material organized in Topics → Concepts → Sections with specific Examples, Exercises, Definitions, code
+
+**Avoid extracting as separate entities**: Line numbers, specific dates, page numbers, file sizes, individual statements/formulas, or granular technical parameters unless they represent key concepts being taught. **NEVER extract course metadata sections as Topics, Concepts, or Sections**.
+"""
+```
