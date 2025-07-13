@@ -364,3 +364,4 @@ INSTRUCTIONAL CONTENT (extract using hierarchy):
 **Avoid extracting as separate entities**: Line numbers, specific dates, page numbers, file sizes, individual statements/formulas, or granular technical parameters unless they represent key concepts being taught. **NEVER extract course metadata sections as Topics, Concepts, or Sections**.
 """
 ```
+

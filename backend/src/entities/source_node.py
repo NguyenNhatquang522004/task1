@@ -30,3 +30,4 @@ class sourceNode:
     processed_chunk:int=None
     access_token:str=None
     retry_condition:str=None
+    schema:str=None
