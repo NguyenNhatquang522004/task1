@@ -1,2 +1,2 @@
 cd frontend
-yarn run lint-staged
+npm run lint-staged

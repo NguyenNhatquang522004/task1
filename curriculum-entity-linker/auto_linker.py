@@ -15,9 +15,9 @@ def monitor_and_link():
     """Monitor for new documents and automatically link them"""
     
     # Neo4j connection
-    uri = os.getenv('NEO4J_URI', 'neo4j://localhost:7687')
+    uri = os.getenv('NEO4J_URI', 'neo4j+s://013fb011.databases.neo4j.io')
     username = os.getenv('NEO4J_USERNAME', 'neo4j')
-    password = os.getenv('NEO4J_PASSWORD', 'password')
+    password = os.getenv('NEO4J_PASSWORD', 'NH43Qy392yswBCfUFNrjYjIIvr4B_LcJB4eMRNzHrp')
     database = os.getenv('NEO4J_DATABASE', 'neo4j')
     
     linker = CurriculumEntityLinker(uri, username, password, database)

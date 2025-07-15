@@ -147,8 +147,10 @@ class CurriculumEntityLinker:
         Returns:
             True nếu đã được link, False nếu chưa
         """
+        # Kiểm tra bằng cách tìm CurriculumLink đã có relationships đến entities của document này
+        # Sử dụng ĐÚNG relationship pattern: Document → FIRST_CHUNK → Chunk → HAS_ENTITY → Entity
         query = """
-        MATCH (d:Document)-[:HAS_ENTITY]->(e)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
+        MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
         WHERE ID(d) = $doc_id
         RETURN count(a) as link_count
         """
@@ -277,13 +279,14 @@ class CurriculumEntityLinker:
             intermediate_node_id: Intermediate node ID
             doc_id: Document ID để tìm related entities
         """
-        # Tìm tất cả entities liên quan đến document này
+        # Tìm tất cả entities liên quan đến document này thông qua Chunk nodes
+        # Cấu trúc ĐÚNG: Document → FIRST_CHUNK → Chunk → HAS_ENTITY → __Entity__
         query = """
-        MATCH (d:Document)-[:HAS_ENTITY]->(e)
+        MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)
         WHERE ID(d) = $doc_id
-        WITH collect(ID(e)) as entity_ids
+        WITH collect(DISTINCT ID(e)) as entity_ids
         
-        MATCH (a:CurriculumLink), (e)
+        MATCH (a:CurriculumLink), (e:__Entity__)
         WHERE ID(a) = $intermediate_node_id AND ID(e) IN entity_ids
         MERGE (a)-[:HAVE_TO]->(e)
         RETURN count(*) as relationships_created
@@ -296,6 +299,23 @@ class CurriculumEntityLinker:
             if record:
                 count = record['relationships_created']
                 logger.info(f"Created {count} HAVE_TO relationships for intermediate node {intermediate_node_id}")
+                
+                if count == 0:
+                    # Debug: Check if entities exist for this document  
+                    debug_query = """
+                    MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)
+                    WHERE ID(d) = $doc_id
+                    RETURN count(e) as entity_count, collect(e.id)[0..5] as sample_entities
+                    """
+                    debug_result = session.run(debug_query, doc_id=doc_id)
+                    debug_record = debug_result.single()
+                    if debug_record:
+                        logger.info(f"Debug: Found {debug_record['entity_count']} entities for document {doc_id}")
+                        logger.info(f"Sample entities: {debug_record['sample_entities']}")
+                    else:
+                        logger.warning(f"Debug: No entities found for document {doc_id}")
+            else:
+                logger.warning(f"No HAVE_TO relationships created for intermediate node {intermediate_node_id}")
     
     def process_all_documents(self, force_relink: bool = False):
         """
@@ -367,8 +387,8 @@ class CurriculumEntityLinker:
         WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
         WITH count(d) as total_docs_with_code
         
-        // Đếm documents đã được link
-        MATCH (d:Document)-[:HAS_ENTITY]->(e)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
+        // Đếm documents đã được link (sử dụng ĐÚNG relationship pattern)
+        MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
         WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
         WITH total_docs_with_code, count(DISTINCT d) as linked_docs
         
@@ -377,7 +397,7 @@ class CurriculumEntityLinker:
         WITH total_docs_with_code, linked_docs, count(a) as total_links
         
         // Đếm total entities được link
-        MATCH (a:CurriculumLink)-[:HAVE_TO]->(e)
+        MATCH (a:CurriculumLink)-[:HAVE_TO]->(e:__Entity__)
         RETURN total_docs_with_code, linked_docs, total_links, count(e) as total_linked_entities
         """
         
@@ -414,7 +434,7 @@ def main():
     # Get environment variables
     uri = os.getenv('NEO4J_URI', 'neo4j://localhost:7687')
     username = os.getenv('NEO4J_USERNAME', 'neo4j')
-    password = os.getenv('NEO4J_PASSWORD', 'password')
+    password = os.getenv('NEO4J_PASSWORD', '12345678')
     database = os.getenv('NEO4J_DATABASE', 'neo4j')
     
     # Initialize linker

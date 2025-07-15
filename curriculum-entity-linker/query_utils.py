@@ -126,6 +126,93 @@ def generate_sample_cypher_queries():
         // Remove all CurriculumLink nodes and relationships
         MATCH (a:CurriculumLink)
         DETACH DELETE a
+        """,
+        
+        "9. Debug: Documents vs CurriculumLinks": """
+        // Count total documents
+        MATCH (d:Document)
+        WITH count(d) as total_docs
+        
+        // Count documents with course codes
+        MATCH (d:Document)
+        WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
+        WITH total_docs, count(d) as docs_with_codes
+        
+        // Count CurriculumLink nodes
+        MATCH (cl:CurriculumLink)
+        WITH total_docs, docs_with_codes, count(cl) as curriculum_links
+        
+        RETURN total_docs, docs_with_codes, curriculum_links,
+               (docs_with_codes - curriculum_links) as missing_links
+        """,
+        
+        "10. Debug: Documents without course codes": """
+        // Find documents that don't have course codes in filename
+        MATCH (d:Document)
+        WHERE NOT d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
+        RETURN d.fileName as filename, d.schema as schema
+        ORDER BY d.fileName
+        """,
+        
+        "11. Debug: Documents with invalid course codes": """
+        // Find documents with course codes that don't exist in framework
+        MATCH (d:Document)
+        WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
+        WITH d, 
+             [x IN split(d.fileName, '[') WHERE x CONTAINS ']'][0] as bracket_content,
+             d.fileName as filename
+        WITH d, filename,
+             [x IN split(bracket_content, ']')][0] as course_code
+        WHERE course_code =~ '[A-Z]{3}\\d{3,4}'
+        
+        // Check if course exists in framework
+        OPTIONAL MATCH (c:Course {code: course_code})
+        WHERE NOT c:__Entity__
+        
+        WITH d, filename, course_code, c
+        WHERE c IS NULL
+        RETURN filename, course_code as invalid_code
+        ORDER BY course_code
+        """,
+        
+        "12. Debug: Documents without entities": """
+        // Find documents that have valid course codes but no extracted entities
+        MATCH (d:Document)
+        WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
+        WITH d, 
+             [x IN split(d.fileName, '[') WHERE x CONTAINS ']'][0] as bracket_content,
+             d.fileName as filename
+        WITH d, filename,
+             [x IN split(bracket_content, ']')][0] as course_code
+        WHERE course_code =~ '[A-Z]{3}\\d{3,4}'
+        
+        // Check if course exists in framework
+        MATCH (c:Course {code: course_code})
+        WHERE NOT c:__Entity__
+        
+        // Check if document has entities
+        OPTIONAL MATCH (d)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)
+        WITH d, filename, course_code, count(e) as entity_count
+        WHERE entity_count = 0
+        
+        RETURN filename, course_code, entity_count
+        ORDER BY course_code
+        """,
+        
+        "13. Debug: Already linked documents": """
+        // Find documents that are already linked via CurriculumLink
+        MATCH (d:Document)
+        WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
+        
+        MATCH (d)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)
+        MATCH (cl:CurriculumLink)-[:HAVE_TO]->(e)
+        MATCH (c:Course)-[:POINT_TO]->(cl)
+        
+        RETURN DISTINCT d.fileName as filename, 
+               c.code as linked_course,
+               cl.name as curriculum_link,
+               count(e) as linked_entities
+        ORDER BY c.code
         """
     }
     

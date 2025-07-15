@@ -147,9 +147,9 @@ export const chunkSize = process.env.VITE_CHUNK_SIZE ? Number(process.env.VITE_C
 export const tokenchunkSize = process.env.VITE_TOKENS_PER_CHUNK ? Number(process.env.VITE_TOKENS_PER_CHUNK) : 100;
 export const chunkOverlap = process.env.VITE_CHUNK_OVERLAP ? Number(process.env.VITE_CHUNK_OVERLAP) : 20;
 export const chunksToCombine = process.env.VITE_CHUNK_TO_COMBINE ? Number(process.env.VITE_CHUNK_TO_COMBINE) : 1;
-export const defaultTokenChunkSizeOptions = [50, 100, 200, 400, 1000];
-export const defaultChunkOverlapOptions = [10, 20, 30, 40, 50];
-export const defaultChunksToCombineOptions = [1, 2, 3, 4, 5, 6];
+export const defaultTokenChunkSizeOptions = [50, 100, 200, 400, 1000, 5000];
+export const defaultChunkOverlapOptions = [10, 20, 30, 40, 50, 350];
+export const defaultChunksToCombineOptions = [1, 2, 3, 4, 5, 6, 9, 10, 15, 20, 25, 30];
 export const timeperpage = process.env.VITE_TIME_PER_PAGE ? Number(process.env.VITE_TIME_PER_PAGE) : 50;
 export const timePerByte = 0.2;
 export const largeFileSize = process.env.VITE_LARGE_FILE_SIZE
@@ -384,7 +384,7 @@ export const getDefaultSchemaExamples = () => {
     label: example.schema,
     value: JSON.stringify(example.triplet),
   }));
-  
+
   const predefinedSchemas = [
     { label: 'stackoverflow', value: JSON.stringify(['User-ANSWERED->Question', 'User-POSTED->Question']) },
     { label: 'movies', value: JSON.stringify(['Actor-ACTED_IN->Movie', 'Director-DIRECTED->Movie']) },
@@ -392,9 +392,9 @@ export const getDefaultSchemaExamples = () => {
     { label: 'corporate', value: JSON.stringify(['Employee-WORKS_FOR->Department', 'Manager-MANAGES->Employee']) },
     { label: 'crime', value: JSON.stringify(['Person-INVOLVED_IN->Crime', 'Officer-INVESTIGATED_BY->Crime']) },
     { label: 'healthcare', value: JSON.stringify(['Case-HAS_REACTION->Reaction', 'Drug-PRESCRIBED->Therapy']) },
-    { label: 'book_structure', value: JSON.stringify(['Chapter-CONTAINS->Section', 'Section-PART_OF->Chapter']) }
+    { label: 'book_structure', value: JSON.stringify(['Chapter-CONTAINS->Section', 'Section-PART_OF->Chapter']) },
   ];
-  
+
   return [...tripletSchemas, ...predefinedSchemas];
 };
 
