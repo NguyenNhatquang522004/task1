@@ -150,7 +150,7 @@ class CurriculumEntityLinker:
         # Kiểm tra bằng cách tìm CurriculumLink đã có relationships đến entities của document này
         # Sử dụng ĐÚNG relationship pattern: Document → FIRST_CHUNK → Chunk → HAS_ENTITY → Entity
         query = """
-        MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
+        MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)<-[:HAVE]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
         WHERE ID(d) = $doc_id
         RETURN count(a) as link_count
         """
@@ -186,13 +186,13 @@ class CurriculumEntityLinker:
     
     def find_course_framework(self, course_code: str) -> Optional[Dict]:
         """
-        Tìm Course framework node tương ứng với course code
+        Tìm Course node tương ứng với course code (đơn giản hóa - chỉ cần có course code)
         
         Args:
             course_code: Course code (ví dụ: CMP170)
             
         Returns:
-            Course framework info hoặc None
+            Course info hoặc None
         """
         query = """
         MATCH (c:Course {code: $course_code})
@@ -210,10 +210,10 @@ class CurriculumEntityLinker:
                     'code': record['code'],
                     'name': record['name']
                 }
-                logger.debug(f"Found course framework: {course_code} - {record['name']}")
+                logger.info(f"✅ Found course: {course_code} - {record['name']} → Will create CurriculumLink")
                 return course_info
             
-        logger.debug(f"No course framework found for: {course_code}")
+        logger.warning(f"❌ No course found for: {course_code} → Cannot create CurriculumLink")
         return None
     
     def create_intermediate_node(self, schema: str, filename: str) -> str:
@@ -271,9 +271,9 @@ class CurriculumEntityLinker:
             session.run(query, course_id=course_id, intermediate_node_id=intermediate_node_id)
             logger.debug(f"Created POINT_TO relationship: Course({course_id}) -> CurriculumLink({intermediate_node_id})")
     
-    def create_have_to_relationships(self, intermediate_node_id: int, doc_id: int):
+    def create_have_relationships(self, intermediate_node_id: int, doc_id: int):
         """
-        Tạo relationship HAVE_TO từ intermediate node đến extracted entities
+        Tạo relationship HAVE từ intermediate node đến extracted entities
         
         Args:
             intermediate_node_id: Intermediate node ID
@@ -288,7 +288,7 @@ class CurriculumEntityLinker:
         
         MATCH (a:CurriculumLink), (e:__Entity__)
         WHERE ID(a) = $intermediate_node_id AND ID(e) IN entity_ids
-        MERGE (a)-[:HAVE_TO]->(e)
+        MERGE (a)-[:HAVE]->(e)
         RETURN count(*) as relationships_created
         """
         
@@ -298,7 +298,7 @@ class CurriculumEntityLinker:
             
             if record:
                 count = record['relationships_created']
-                logger.info(f"Created {count} HAVE_TO relationships for intermediate node {intermediate_node_id}")
+                logger.info(f"Created {count} HAVE relationships for intermediate node {intermediate_node_id}")
                 
                 if count == 0:
                     # Debug: Check if entities exist for this document  
@@ -315,7 +315,7 @@ class CurriculumEntityLinker:
                     else:
                         logger.warning(f"Debug: No entities found for document {doc_id}")
             else:
-                logger.warning(f"No HAVE_TO relationships created for intermediate node {intermediate_node_id}")
+                logger.warning(f"No HAVE relationships created for intermediate node {intermediate_node_id}")
     
     def process_all_documents(self, force_relink: bool = False):
         """
@@ -349,28 +349,31 @@ class CurriculumEntityLinker:
             
             logger.info(f"Processing: {course_code} - {filename}")
             
-            # Tìm course framework
+            # Đơn giản hóa: Chỉ cần tìm thấy course code là tạo link ngay
             course_framework = self.find_course_framework(course_code)
             
             if not course_framework:
-                logger.warning(f"No course framework found for {course_code}, skipping...")
+                logger.warning(f"❌ Course {course_code} not found in database, skipping...")
                 skipped_count += 1
                 continue
             
-            # Tạo intermediate node
+            # ✅ Course code match → Tạo CurriculumLink ngay lập tức
+            logger.info(f"🎯 Course {course_code} found → Creating CurriculumLink...")
+            
+            # Tạo intermediate node (CurriculumLink)
             intermediate_node_id = self.create_intermediate_node(schema, filename)
             
             if not intermediate_node_id:
-                logger.error(f"Failed to create intermediate node for {filename}")
+                logger.error(f"Failed to create CurriculumLink for {filename}")
                 skipped_count += 1
                 continue
             
-            # Tạo relationships
+            # Tạo relationships: Course ← CurriculumLink → Entities
             self.create_point_to_relationship(course_framework['course_id'], intermediate_node_id)
-            self.create_have_to_relationships(intermediate_node_id, doc_id)
+            self.create_have_relationships(intermediate_node_id, doc_id)
             
             processed_count += 1
-            logger.info(f"Successfully processed: {course_code} - {filename}")
+            logger.info(f"✅ Successfully linked: {course_code} - {filename}")
         
         logger.info(f"Processing complete! Processed: {processed_count}, Skipped: {skipped_count}")
     
@@ -388,7 +391,7 @@ class CurriculumEntityLinker:
         WITH count(d) as total_docs_with_code
         
         // Đếm documents đã được link (sử dụng ĐÚNG relationship pattern)
-        MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
+        MATCH (d:Document)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)<-[:HAVE]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
         WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
         WITH total_docs_with_code, count(DISTINCT d) as linked_docs
         
@@ -397,7 +400,7 @@ class CurriculumEntityLinker:
         WITH total_docs_with_code, linked_docs, count(a) as total_links
         
         // Đếm total entities được link
-        MATCH (a:CurriculumLink)-[:HAVE_TO]->(e:__Entity__)
+        MATCH (a:CurriculumLink)-[:HAVE]->(e:__Entity__)
         RETURN total_docs_with_code, linked_docs, total_links, count(e) as total_linked_entities
         """
         

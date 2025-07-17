@@ -4,10 +4,29 @@ Curriculum Link Cleaner
 
 Script này xóa tất cả CurriculumLink nodes và các relationships liên quan:
 - POINT_TO relationships (Course → CurriculumLink)
-- HAVE_TO relationships (CurriculumLink → __Entity__)
-- CurriculumLink nodes
-
-Sử dụng khi cần cleanup hoặc reset curriculum linking system.
+- HAVE relationships (CurriculumLink → __Entity__)
+- CurriculumLink n        logger.info("📊 A        logger.info("📈 CLEANUP SUMMARY:")
+        logger.info(f"  • HAVE relationships deleted: {deleted_have}")
+        logger.info(f"  • POINT_TO relationships deleted: {deleted_point_to}")
+        logger.info(f"  • CurriculumLink nodes deleted: {deleted_nodes}")
+        
+        return {
+            'before': before_stats,
+            'deleted': {
+                'have_relationships': deleted_have,
+                'point_to_relationships': deleted_point_to,
+                'curriculum_link_nodes': deleted_nodes
+            },:")
+        logger.info(f"  • Remaining CurriculumLink nodes: {after_stats['remaining_curriculum_links']}")
+        logger.info(f"  • Remaining POINT_TO relationships: {after_stats['remaining_point_to']}")
+        logger.info(f"  • Remaining HAVE relationships: {after_stats['remaining_have']}")
+        
+        # Check if cleanup was successful
+        cleanup_success = (
+            after_stats['remaining_curriculum_links'] == 0 and
+            after_stats['remaining_point_to'] == 0 and
+            after_stats['remaining_have'] == 0
+        )dụng khi cần cleanup hoặc reset curriculum linking system.
 """
 
 import os
@@ -61,13 +80,13 @@ class CurriculumLinkCleaner:
         MATCH ()-[r1:POINT_TO]->()
         WITH curriculum_links, count(r1) as point_to_rels
         
-        // Count HAVE_TO relationships  
-        MATCH ()-[r2:HAVE_TO]->()
-        WITH curriculum_links, point_to_rels, count(r2) as have_to_rels
+        // Count HAVE relationships  
+        MATCH ()-[r2:HAVE]->()
+        WITH curriculum_links, point_to_rels, count(r2) as have_rels
         
-        // Count total entities linked via HAVE_TO
-        MATCH (:CurriculumLink)-[:HAVE_TO]->(e:__Entity__)
-        RETURN curriculum_links, point_to_rels, have_to_rels, count(DISTINCT e) as linked_entities
+        // Count total entities linked via HAVE
+        MATCH (:CurriculumLink)-[:HAVE]->(e:__Entity__)
+        RETURN curriculum_links, point_to_rels, have_rels, count(DISTINCT e) as linked_entities
         """
         
         with self.driver.session(database=self.database) as session:
@@ -78,28 +97,28 @@ class CurriculumLinkCleaner:
                 return {
                     'curriculum_links': record['curriculum_links'],
                     'point_to_relationships': record['point_to_rels'],
-                    'have_to_relationships': record['have_to_rels'],
+                    'have_relationships': record['have_rels'],
                     'linked_entities': record['linked_entities']
                 }
             
         return {
             'curriculum_links': 0,
             'point_to_relationships': 0,
-            'have_to_relationships': 0,
+            'have_relationships': 0,
             'linked_entities': 0
         }
     
-    def delete_have_to_relationships(self) -> int:
+    def delete_have_relationships(self) -> int:
         """
-        Xóa tất cả HAVE_TO relationships
+        Xóa tất cả HAVE relationships
         
         Returns:
             Số lượng relationships đã xóa
         """
-        logger.info("Deleting HAVE_TO relationships...")
+        logger.info("Deleting HAVE relationships...")
         
         query = """
-        MATCH (:CurriculumLink)-[r:HAVE_TO]->(:__Entity__)
+        MATCH (:CurriculumLink)-[r:HAVE]->(:__Entity__)
         WITH r
         DELETE r
         RETURN count(*) as deleted_count
@@ -111,7 +130,7 @@ class CurriculumLinkCleaner:
             
             if record:
                 count = record['deleted_count']
-                logger.info(f"Deleted {count} HAVE_TO relationships")
+                logger.info(f"Deleted {count} HAVE relationships")
                 return count
                 
         return 0
@@ -183,9 +202,9 @@ class CurriculumLinkCleaner:
         MATCH ()-[r1:POINT_TO]->()
         WITH remaining_links, count(r1) as remaining_point_to
         
-        // Check remaining HAVE_TO relationships
-        MATCH ()-[r2:HAVE_TO]->()
-        RETURN remaining_links, remaining_point_to, count(r2) as remaining_have_to
+        // Check remaining HAVE relationships
+        MATCH ()-[r2:HAVE]->()
+        RETURN remaining_links, remaining_point_to, count(r2) as remaining_have
         """
         
         with self.driver.session(database=self.database) as session:
@@ -196,13 +215,13 @@ class CurriculumLinkCleaner:
                 return {
                     'remaining_curriculum_links': record['remaining_links'],
                     'remaining_point_to': record['remaining_point_to'],
-                    'remaining_have_to': record['remaining_have_to']
+                    'remaining_have': record['remaining_have']
                 }
             
         return {
             'remaining_curriculum_links': 0,
             'remaining_point_to': 0,
-            'remaining_have_to': 0
+            'remaining_have': 0
         }
     
     def perform_complete_cleanup(self) -> Dict:
@@ -221,7 +240,7 @@ class CurriculumLinkCleaner:
         logger.info("📊 BEFORE CLEANUP:")
         logger.info(f"  • CurriculumLink nodes: {before_stats['curriculum_links']}")
         logger.info(f"  • POINT_TO relationships: {before_stats['point_to_relationships']}")
-        logger.info(f"  • HAVE_TO relationships: {before_stats['have_to_relationships']}")
+        logger.info(f"  • HAVE relationships: {before_stats['have_relationships']}")
         logger.info(f"  • Linked entities: {before_stats['linked_entities']}")
         
         if before_stats['curriculum_links'] == 0:
@@ -229,7 +248,7 @@ class CurriculumLinkCleaner:
             return {
                 'before': before_stats,
                 'deleted': {
-                    'have_to_relationships': 0,
+                    'have_relationships': 0,
                     'point_to_relationships': 0,
                     'curriculum_link_nodes': 0
                 },
@@ -240,8 +259,8 @@ class CurriculumLinkCleaner:
         
         logger.info("\n🔄 CLEANUP PROCESS:")
         
-        # Step 1: Delete HAVE_TO relationships first
-        deleted_have_to = self.delete_have_to_relationships()
+        # Step 1: Delete HAVE relationships first
+        deleted_have = self.delete_have_relationships()
         
         # Step 2: Delete POINT_TO relationships
         deleted_point_to = self.delete_point_to_relationships()
@@ -270,14 +289,14 @@ class CurriculumLinkCleaner:
             logger.warning("\n⚠️  CLEANUP INCOMPLETE - Some items may remain")
         
         logger.info("\n📈 CLEANUP SUMMARY:")
-        logger.info(f"  • HAVE_TO relationships deleted: {deleted_have_to}")
+        logger.info(f"  • HAVE relationships deleted: {deleted_have}")
         logger.info(f"  • POINT_TO relationships deleted: {deleted_point_to}")
         logger.info(f"  • CurriculumLink nodes deleted: {deleted_nodes}")
         
         return {
             'before': before_stats,
             'deleted': {
-                'have_to_relationships': deleted_have_to,
+                'have_relationships': deleted_have,
                 'point_to_relationships': deleted_point_to,
                 'curriculum_link_nodes': deleted_nodes
             },
@@ -321,7 +340,7 @@ def main():
             print("✅ Cleanup completed successfully!")
             print(f"   • Deleted {results['deleted']['curriculum_link_nodes']} CurriculumLink nodes")
             print(f"   • Deleted {results['deleted']['point_to_relationships']} POINT_TO relationships")
-            print(f"   • Deleted {results['deleted']['have_to_relationships']} HAVE_TO relationships")
+            print(f"   • Deleted {results['deleted']['have_relationships']} HAVE relationships")
         else:
             print("⚠️  Cleanup incomplete!")
             print("   • Check the logs above for details")
@@ -350,7 +369,7 @@ Curriculum Link Cleaner - Help
 
 DESCRIPTION:
     This script removes all CurriculumLink-related data from Neo4j database:
-    - Deletes HAVE_TO relationships (CurriculumLink → __Entity__)  
+    - Deletes HAVE relationships (CurriculumLink → __Entity__)  
     - Deletes POINT_TO relationships (Course → CurriculumLink)
     - Deletes CurriculumLink nodes
 

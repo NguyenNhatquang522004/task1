@@ -16,7 +16,15 @@ try:
 except ImportError:
     GEMINI_AVAILABLE = False
 
-from ..config.settings import config
+# Fix import path - config is at package root, not in src
+try:
+    from ...config.settings import config
+except ImportError:
+    # Fallback for standalone execution
+    import sys
+    import os
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+    from config.settings import config
 
 logger = logging.getLogger(__name__)
 

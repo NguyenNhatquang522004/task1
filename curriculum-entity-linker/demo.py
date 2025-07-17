@@ -141,7 +141,7 @@ MERGE (c)-[:POINT_TO]->(a)
 MATCH (d:Document)-[:HAS_ENTITY]->(e)
 WHERE d.fileName CONTAINS '[CMP170]'
 MATCH (a:CurriculumLink) WHERE a.name CONTAINS 'CMP170'
-MERGE (a)-[:HAVE_TO]->(e)
+MERGE (a)-[:HAVE]->(e)
 """
     }
     

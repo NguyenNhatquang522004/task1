@@ -135,7 +135,7 @@ class CurriculumLinkDebugger:
         MATCH (d:Document)
         WHERE ID(d) = $doc_id
         
-        OPTIONAL MATCH (c:Course)-[:POINT_TO]->(cl:CurriculumLink)-[:HAVE_TO]->(e:__Entity__)
+        OPTIONAL MATCH (c:Course)-[:POINT_TO]->(cl:CurriculumLink)-[:HAVE]->(e:__Entity__)
         WHERE (d)-[:FIRST_CHUNK]->(:Chunk)-[:HAS_ENTITY]->(e)
         
         RETURN c.code as course_code, 

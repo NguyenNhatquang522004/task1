@@ -104,7 +104,7 @@ def test_cypher_queries():
     
     queries = {
         "Check if document is already linked": """
-MATCH (d:Document)-[:HAS_ENTITY]->(e)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
+MATCH (d:Document)-[:HAS_ENTITY]->(e)<-[:HAVE]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
 WHERE ID(d) = $doc_id
 RETURN count(a) as link_count
 """,
@@ -116,7 +116,7 @@ WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
 WITH count(d) as total_docs_with_code
 
 // Đếm documents đã được link
-MATCH (d:Document)-[:HAS_ENTITY]->(e)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
+MATCH (d:Document)-[:HAS_ENTITY]->(e)<-[:HAVE]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
 WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
 WITH total_docs_with_code, count(DISTINCT d) as linked_docs
 
@@ -128,7 +128,7 @@ RETURN total_docs_with_code, linked_docs,
 MATCH (d:Document)
 WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
   AND NOT EXISTS {
-    MATCH (d)-[:HAS_ENTITY]->(e)<-[:HAVE_TO]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
+    MATCH (d)-[:HAS_ENTITY]->(e)<-[:HAVE]-(a:CurriculumLink)<-[:POINT_TO]-(c:Course)
   }
 RETURN d.fileName, d.schema, ID(d) as doc_id
 """,

@@ -101,7 +101,7 @@ def generate_sample_cypher_queries():
         RETURN c.code, a.name
         """,
         
-        "6. Sample: Create HAVE_TO relationships": """
+        "6. Sample: Create HAVE relationships": """
         // Link CurriculumLink to extracted entities from document
         MATCH (d:Document)-[:HAS_ENTITY]->(e)
         WHERE d.fileName CONTAINS '[CMP170]'
@@ -111,13 +111,13 @@ def generate_sample_cypher_queries():
         WHERE a.name CONTAINS 'CMP170'
         
         UNWIND entities as entity
-        MERGE (a)-[:HAVE_TO]->(entity)
+        MERGE (a)-[:HAVE]->(entity)
         RETURN a.name, count(entity) as entities_linked
         """,
         
         "7. Verify Complete Structure": """
         // Check the complete linking structure
-        MATCH (c:Course)-[:POINT_TO]->(a:CurriculumLink)-[:HAVE_TO]->(e)
+        MATCH (c:Course)-[:POINT_TO]->(a:CurriculumLink)-[:HAVE]->(e)
         RETURN c.code, c.name, a.name, labels(e) as entity_labels, count(e) as entity_count
         ORDER BY c.code
         """,
@@ -205,7 +205,7 @@ def generate_sample_cypher_queries():
         WHERE d.fileName =~ '.*\\[([A-Z]{3}\\d{3,4})\\].*'
         
         MATCH (d)-[:FIRST_CHUNK]->(chunk:Chunk)-[:HAS_ENTITY]->(e:__Entity__)
-        MATCH (cl:CurriculumLink)-[:HAVE_TO]->(e)
+        MATCH (cl:CurriculumLink)-[:HAVE]->(e)
         MATCH (c:Course)-[:POINT_TO]->(cl)
         
         RETURN DISTINCT d.fileName as filename, 

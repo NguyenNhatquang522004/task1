@@ -19,7 +19,7 @@ def show_entity_linking_analysis():
     print("   └── ... TẤT CẢ entities khác")
     print()
     print("2. CurriculumLink: 'giáo_trình_CMP170_...'")
-    print("   ↓ HAVE_TO (TẤT CẢ)")
+    print("   ↓ HAVE (TẤT CẢ)")
     print("   ├── Entity1")
     print("   ├── Entity2") 
     print("   ├── Entity3")
@@ -44,7 +44,7 @@ RETURN d.fileName,
         
         "2. Xem CurriculumLink và các entities nó link đến": """
 // Xem một CurriculumLink cụ thể
-MATCH (a:CurriculumLink)-[:HAVE_TO]->(e:__Entity__)
+MATCH (a:CurriculumLink)-[:HAVE]->(e:__Entity__)
 WHERE a.name CONTAINS 'CMP170'
 RETURN a.name,
        labels(e) as entity_labels,
@@ -54,7 +54,7 @@ RETURN a.name,
         
         "3. Verify full chain từ Course đến Entities": """
 // Full chain: Course → CurriculumLink → Entities
-MATCH (c:Course)-[:POINT_TO]->(a:CurriculumLink)-[:HAVE_TO]->(e:__Entity__)
+MATCH (c:Course)-[:POINT_TO]->(a:CurriculumLink)-[:HAVE]->(e:__Entity__)
 WHERE c.code = 'CMP170'
 RETURN c.code, c.name,
        a.name as curriculum_link,
@@ -68,7 +68,7 @@ MATCH (d:Document)-[:HAS_ENTITY]->(e1:__Entity__)
 WHERE d.fileName CONTAINS '[CMP170]'
 WITH d, collect(e1) as doc_entities
 
-MATCH (a:CurriculumLink)-[:HAVE_TO]->(e2:__Entity__)
+MATCH (a:CurriculumLink)-[:HAVE]->(e2:__Entity__)
 WHERE a.name CONTAINS 'CMP170'
 WITH d, doc_entities, a, collect(e2) as link_entities
 
@@ -84,7 +84,7 @@ RETURN d.fileName,
 MATCH (d:Document)-[:HAS_ENTITY]->(e:__Entity__)
 WHERE d.fileName CONTAINS '[CMP170]'
   AND NOT EXISTS {
-    MATCH (a:CurriculumLink)-[:HAVE_TO]->(e)
+    MATCH (a:CurriculumLink)-[:HAVE]->(e)
     WHERE a.name CONTAINS 'CMP170'
   }
 RETURN d.fileName, 
@@ -124,13 +124,13 @@ def main():
     print("\n" + "=" * 60)
     print("🎯 ANSWER TO USER QUESTION:")
     print("=" * 60)
-    print("✅ CÓ! CurriculumLink node sẽ có HAVE_TO relationship")
+    print("✅ CÓ! CurriculumLink node sẽ có HAVE relationship")
     print("   đến TẤT CẢ entities có label __Entity__ trong document đó.")
     print()
     print("📋 Workflow:")
     print("1. Document A có entities: E1, E2, E3, ...")
     print("2. Tất cả có label __Entity__ và relationship HAS_ENTITY từ Document")
-    print("3. CurriculumLink sẽ tạo HAVE_TO đến TẤT CẢ: E1, E2, E3, ...")
+    print("3. CurriculumLink sẽ tạo HAVE đến TẤT CẢ: E1, E2, E3, ...")
     print("4. Không có filtering - lấy hết entities của document đó")
 
 if __name__ == "__main__":
