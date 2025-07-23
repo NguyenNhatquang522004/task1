@@ -16,6 +16,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 import boto3
 from langchain_community.embeddings import BedrockEmbeddings
+from src.property_validator import validate_graph_documents_list
 
 def check_url_source(source_type, yt_url:str=None, wiki_query:str=None):
     language=''
@@ -149,20 +150,61 @@ def load_embedding_model(embedding_model_name: str):
     return embeddings, dimension
 
 def save_graphDocuments_in_neo4j(graph: Neo4jGraph, graph_document_list: List[GraphDocument], max_retries=3, delay=1):
-   retries = 0
-   while retries < max_retries:
-       try:
-           graph.add_graph_documents(graph_document_list, baseEntityLabel=True)
-           return
-       except TransientError as e:
-           if "DeadlockDetected" in str(e):
-               retries += 1
-               logging.info(f"Deadlock detected. Retrying {retries}/{max_retries} in {delay} seconds...")
-               time.sleep(delay)  # Wait before retrying
-           else:
-               raise
-   logging.error("Failed to execute query after maximum retries due to persistent deadlocks.")
-   raise RuntimeError("Query execution failed after multiple retries due to deadlock.")
+   """
+   Save graph documents to Neo4j with cascading property validation and retry logic
+   """
+   try:
+       # Validate and clean all graph documents before saving
+       logging.info(f"Validating {len(graph_document_list)} graph documents before saving to Neo4j")
+       cleaned_graph_documents = validate_graph_documents_list(graph_document_list)
+       logging.info(f"Graph documents validated and cleaned successfully")
+       
+       retries = 0
+       while retries < max_retries:
+           try:
+               graph.add_graph_documents(cleaned_graph_documents, baseEntityLabel=True)
+               logging.info(f"Successfully saved {len(cleaned_graph_documents)} graph documents to Neo4j")
+               return
+           except TransientError as e:
+               if "DeadlockDetected" in str(e):
+                   retries += 1
+                   logging.info(f"Deadlock detected. Retrying {retries}/{max_retries} in {delay} seconds...")
+                   time.sleep(delay)  # Wait before retrying
+               else:
+                   raise
+           except Exception as e:
+               # Check if it's a property size error
+               if "Property value is too large to index" in str(e):
+                   logging.warning(f"Property size error detected, trying aggressive truncation: {e}")
+                   # Try aggressive truncation
+                   try:
+                       cleaned_graph_documents = validate_graph_documents_list(graph_document_list, aggressive=True)
+                       graph.add_graph_documents(cleaned_graph_documents, baseEntityLabel=True)
+                       logging.info(f"Successfully saved graph documents after aggressive truncation")
+                       return
+                   except Exception as e2:
+                       if "Property value is too large to index" in str(e2):
+                           logging.warning(f"Still property size error after aggressive truncation, trying emergency truncation: {e2}")
+                           # Try emergency truncation
+                           try:
+                               cleaned_graph_documents = validate_graph_documents_list(graph_document_list, emergency=True)
+                               graph.add_graph_documents(cleaned_graph_documents, baseEntityLabel=True)
+                               logging.info(f"Successfully saved graph documents after emergency truncation")
+                               return
+                           except Exception as e3:
+                               logging.error(f"Failed even after emergency truncation: {e3}")
+                               raise
+                       else:
+                           raise
+               else:
+                   raise
+       
+       logging.error("Failed to execute query after maximum retries due to persistent deadlocks.")
+       raise RuntimeError("Query execution failed after multiple retries due to deadlock.")
+       
+   except Exception as e:
+       logging.error(f"Error in save_graphDocuments_in_neo4j: {e}")
+       raise
            
 def handle_backticks_nodes_relationship_id_type(graph_document_list:List[GraphDocument]):
   for graph_document in graph_document_list:

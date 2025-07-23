@@ -586,11 +586,22 @@ async def connect(uri=Form(None), userName=Form(None), password=Form(None), data
 @app.post("/upload")
 async def upload_large_file_into_chunks(file:UploadFile = File(...), chunkNumber=Form(None), totalChunks=Form(None), 
                                         originalname=Form(None), model=Form(None), uri=Form(None), userName=Form(None), 
-                                        password=Form(None), database=Form(None),email=Form(None)):
+                                        password=Form(None), database=Form(None), email=Form(None),
+                                        course_code=Form(None), folder_name=Form(None)):
     try:
         start = time.time()
+        
+        # Debug: Log all received parameters
+        logging.info(f"🔍 Upload API called with parameters:")
+        logging.info(f"  - originalname: {originalname}")
+        logging.info(f"  - chunkNumber: {chunkNumber}")
+        logging.info(f"  - totalChunks: {totalChunks}")
+        logging.info(f"  - course_code: {course_code}")
+        logging.info(f"  - folder_name: {folder_name}")
+        logging.info(f"  - model: {model}")
+        
         graph = create_graph_database_connection(uri, userName, password, database)
-        result = await asyncio.to_thread(upload_file, graph, model, file, chunkNumber, totalChunks, originalname, uri, CHUNK_DIR, MERGED_DIR)
+        result = await asyncio.to_thread(upload_file, graph, model, file, chunkNumber, totalChunks, originalname, uri, CHUNK_DIR, MERGED_DIR, course_code, folder_name)
         end = time.time()
         elapsed_time = end - start
         if int(chunkNumber) == int(totalChunks):
@@ -634,9 +645,13 @@ async def get_structured_schema(uri=Form(None), userName=Form(None), password=Fo
         gc.collect()
             
 def decode_password(pwd):
-    sample_string_bytes = base64.b64decode(pwd)
-    decoded_password = sample_string_bytes.decode("utf-8")
-    return decoded_password
+    try:
+        sample_string_bytes = base64.b64decode(pwd)
+        decoded_password = sample_string_bytes.decode("utf-8")
+        return decoded_password
+    except Exception:
+        # If decoding fails, assume password is already plain text
+        return pwd
 
 def encode_password(pwd):
     data_bytes = pwd.encode('ascii')
@@ -761,6 +776,54 @@ async def get_document_status(file_name, url, userName, password, database):
         error_message = str(e)
         logging.exception(f'{message}:{error_message}')
         return create_api_response('Failed',message=message)
+
+@app.get('/folders')
+async def get_available_folders(uri: str, userName: str, password: str, database: str = "neo4j"):
+    """
+    Get list of available folder names from existing documents
+    """
+    try:
+        # Decode password if encoded
+        decoded_password = decode_password(password)
+            
+        # Handle URL formatting
+        if " " in uri:
+            uri = uri.replace(" ", "+")
+            
+        # Connect to Neo4j
+        graph = create_graph_database_connection(uri, userName, decoded_password, database)
+        
+        # Query to get distinct folder names
+        folder_query = """
+        MATCH (d:Document)
+        WHERE d.folder_name IS NOT NULL AND d.folder_name <> ""
+        RETURN DISTINCT d.folder_name as folder_name
+        ORDER BY d.folder_name
+        """
+        
+        result = graph.query(folder_query)
+        
+        # Extract folder names
+        folders = [record['folder_name'] for record in result if record['folder_name']]
+        
+        # Add some default/suggested folders if no folders exist
+        if not folders:
+            folders = [
+                "đề cương",
+                "giáo trìnhqqqq", 
+                "tham khảo",
+                "nội bộ",
+                "chính thức"
+            ]
+        
+        logging.info(f'Available folders: {folders}')
+        return create_api_response('Success', message="Folders retrieved successfully", data=folders)
+        
+    except Exception as e:
+        message = f"Unable to get available folders"
+        error_message = str(e)
+        logging.exception(f'{message}:{error_message}')
+        return create_api_response('Failed', message=message, error=error_message)
     
 @app.post("/cancelled_job")
 async def cancelled_job(uri=Form(None), userName=Form(None), password=Form(None), database=Form(None), filenames=Form(None), source_types=Form(None),email=Form(None)):

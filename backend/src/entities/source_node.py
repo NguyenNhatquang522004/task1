@@ -31,3 +31,7 @@ class sourceNode:
     access_token:str=None
     retry_condition:str=None
     schema:str=None
+    course_code:str=None
+    folder_name:str=None
+    triplet:str=None
+    additional_instructions:str=None

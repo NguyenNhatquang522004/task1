@@ -265,7 +265,6 @@
   {
     "schema": "decuong",
     "triplet": [
-   
     "Mon_Hoc-THUOC_VE->Khoa",
     "Course-BELONGS_TO->Faculty",
     "Mon_Hoc-CO_MA->Ma_Mon_Hoc",
@@ -465,6 +464,308 @@
     "Student-COMPLETES->Course",
     "Giang_Vien-HUONG_DAN->Sinh_Vien",
     "Instructor-GUIDES->Student"
+  ]
+},
+{
+  "schema": "ebook",
+  "triplet": [
+    "Book-HAS_CHAPTER->Chapter",
+    "Book-AUTHORS->Author",
+    "Book-PUBLISHES->Publisher",
+    "Book-BELONGS_TO->Genre",
+    "Book-CATEGORIZED_AS->Category",
+    "Book-HAS_CONTENT->BookContent",
+    "Book-DESCRIBES->BookDescription",
+    "Book-REQUIRES->Prerequisites",
+    "Book-TAGGED_AS->Tag",
+    "Book-CONTAINS->TableOfContents",
+    "Book-PART_OF->Series",
+    "Book-MEMBER_OF->Volume",
+    "Book-USES->Language",
+    "Book-HAS_CONTENT->Format",
+    "Book-SUPPORTS->License",
+    
+    "Chapter-HAS_SECTION->Section",
+    "Chapter-HAS_CONTENT->ContentOfChapter",
+    "Chapter-PART_OF->Book",
+    "Chapter-CONTAINS->ChapterSummary",
+    "Chapter-INCLUDES->Introduction",
+    "Chapter-INCLUDES->Conclusion",
+    "Chapter-REFERENCES->Reference",
+    "Chapter-CONTAINS->ReadingObjective",
+    "Chapter-LEADS_TO->ReadingOutcome",
+    
+    "Section-HAS_SUBSECTION->SubSection",
+    "Section-HAS_CONTENT->ContentOfSection",
+    "Section-BELONGS_TO->Chapter",
+    "Section-CONTAINS->Paragraph",
+    "Section-INCLUDES->Example",
+    "Section-INCLUDES->Exercise",
+    "Section-INCLUDES->Definition",
+    "Section-INCLUDES->Code",
+    "Section-INCLUDES->Formula",
+    "Section-INCLUDES->Diagram",
+    "Section-INCLUDES->Image",
+    "Section-INCLUDES->Table",
+    
+    "SubSection-HAS_PARAGRAPH->Paragraph",
+    "SubSection-HAS_CONTENT->ContentOfSubSection",
+    "SubSection-BELONGS_TO->Section",
+    "SubSection-CONTAINS->Note",
+    "SubSection-INCLUDES->Quote",
+    "SubSection-DEMONSTRATES->Example",
+    
+    "Paragraph-HAS_CONTENT->ContentOfParagraph",
+    "Paragraph-BELONGS_TO->SubSection",
+    "Paragraph-CONTAINS->Definition",
+    "Paragraph-INCLUDES->Code",
+    "Paragraph-REFERENCES->Citation",
+    
+    "Author-WRITES->Book",
+    "Author-CO_AUTHORS->CoAuthor",
+    "Author-MEMBER_OF->Organization",
+    "Author-WORKS_FOR->Institution",
+    
+    "CoAuthor-WRITES->Book",
+    "CoAuthor-COLLABORATES_WITH->Author",
+    
+    "Editor-EDITS->Book",
+    "Editor-WORKS_FOR->Publisher",
+    
+    "Translator-TRANSLATES->Book",
+    "Translator-USES->Language",
+    
+    "Reviewer-REVIEWS->Book",
+    "Reviewer-RATES->Book",
+    "Reviewer-COMMENTS_ON->Book",
+    
+    "Reader-READS->Book",
+    "Reader-RATES->Book",
+    "Reader-USES->ReadingTool",
+    "Reader-UTILIZES->ReadingMethod",
+    "Reader-APPLIES->ReadingApproach",
+    
+    "Publisher-PUBLISHES->Book",
+    "Publisher-MANAGES->Edition",
+    "Publisher-OFFERS->Series",
+    "Publisher-DISTRIBUTES->Book",
+    
+    "Edition-EXTENDS->Book",
+    "Edition-BUILDS_ON->Book",
+    "Edition-MANAGED_BY->Publisher",
+    
+    "Series-CONTAINS->Book",
+    "Series-PART_OF->Volume",
+    "Series-OFFERED_BY->Publisher",
+    
+    "Volume-CONTAINS->Series",
+    "Volume-PART_OF->Book",
+    
+    "Organization-HOSTS->Author",
+    "Organization-SUPPORTS->Publisher",
+    "Organization-OFFERS->Library",
+    
+    "Institution-EMPLOYS->Author",
+    "Institution-HOSTS->Library",
+    "Institution-SUPPORTS->Publisher",
+    
+    "Library-HOSTS->Book",
+    "Library-MEMBER_OF->Institution",
+    "Library-OFFERS->Reader",
+    
+    "Reference-REFERENCES->Book",
+    "Reference-CITES->Author",
+    "Reference-PART_OF->Bibliography",
+    "Reference-SOURCES->Source",
+    
+    "Bibliography-CONTAINS->Reference",
+    "Bibliography-PART_OF->Book",
+    "Bibliography-INCLUDES->Citation",
+    
+    "Citation-CITES->Reference",
+    "Citation-QUOTES->Author",
+    "Citation-MENTIONS->Source",
+    
+    "Source-PROVIDES->Reference",
+    "Source-VALIDATES->Citation",
+    "Source-SUPPORTS->Book",
+    
+    "TableOfContents-BELONGS_TO->Book",
+    "TableOfContents-CONTAINS->ChapterOfTableOfContents",
+    "TableOfContents-INCLUDES->SectionOfTableOfContents",
+    
+    "ChapterOfTableOfContents-PART_OF->TableOfContents",
+    "ChapterOfTableOfContents-REFERENCES->Chapter",
+    "ChapterOfTableOfContents-CONTAINS->SectionOfTableOfContents",
+    
+    "SectionOfTableOfContents-PART_OF->ChapterOfTableOfContents",
+    "SectionOfTableOfContents-REFERENCES->Section",
+    "SectionOfTableOfContents-CONTAINS->SubSectionOfTableOfContents",
+    
+    "SubSectionOfTableOfContents-PART_OF->SectionOfTableOfContents",
+    "SubSectionOfTableOfContents-REFERENCES->SubSection",
+    
+    "ReadingObjective-DEFINES->Chapter",
+    "ReadingObjective-LEADS_TO->ReadingOutcome",
+    "ReadingObjective-ACHIEVES->LearningGoal",
+    
+    "ReadingOutcome-RESULTS_IN->KeyTakeaway",
+    "ReadingOutcome-VALIDATES->ReadingObjective",
+    "ReadingOutcome-DEMONSTRATES->LearningGoal",
+    
+    "LearningGoal-ACHIEVES->ReadingOutcome",
+    "LearningGoal-REQUIRES->ReadingActivity",
+    "LearningGoal-USES->ReadingResource",
+    
+    "KeyTakeaway-SUMMARIZES->Chapter",
+    "KeyTakeaway-RESULTS_IN->ReadingOutcome",
+    "KeyTakeaway-VALIDATES->LearningGoal",
+    
+    "ReadingActivity-SUPPORTS->LearningGoal",
+    "ReadingActivity-USES->ReadingResource",
+    "ReadingActivity-UTILIZES->ReadingTool",
+    "ReadingActivity-APPLIES->ReadingMethod",
+    
+    "ReadingResource-SUPPORTS->ReadingActivity",
+    "ReadingResource-INCLUDES->ReadingMaterial",
+    "ReadingResource-FACILITATES->LearningGoal",
+    
+    "ReadingMaterial-PART_OF->ReadingResource",
+    "ReadingMaterial-SUPPORTS->ReadingActivity",
+    "ReadingMaterial-ENABLES->ReadingMethod",
+    
+    "ReadingMethod-APPLIES->ReadingActivity",
+    "ReadingMethod-USES->ReadingTool",
+    "ReadingMethod-UTILIZES->ReadingResource",
+    
+    "ReadingTool-FACILITATES->ReadingMethod",
+    "ReadingTool-SUPPORTS->ReadingActivity",
+    "ReadingTool-RUNS_ON->ReadingPlatform",
+    
+    "ReadingEnvironment-HOSTS->ReadingPlatform",
+    "ReadingEnvironment-SUPPORTS->ReadingTool",
+    "ReadingEnvironment-ENABLES->ReadingActivity",
+    
+    "ReadingPlatform-HOSTS->ReadingTool",
+    "ReadingPlatform-SUPPORTS->ReadingMethod",
+    "ReadingPlatform-RUNS_IN->ReadingEnvironment",
+    
+    "BookDescription-DESCRIBES->Book",
+    "BookDescription-EXPLAINS->BookContent",
+    "BookDescription-SUMMARIZES->Chapter",
+    
+    "BookContent-BELONGS_TO->Book",
+    "BookContent-CONTAINS->Chapter",
+    "BookContent-INCLUDES->Section",
+    
+    "ChapterSummary-SUMMARIZES->Chapter",
+    "ChapterSummary-PART_OF->Chapter",
+    "ChapterSummary-CONTAINS->KeyTakeaway",
+    
+    "Abstract-SUMMARIZES->Book",
+    "Abstract-DESCRIBES->BookContent",
+    "Abstract-PART_OF->Book",
+    
+    "Introduction-INTRODUCES->Chapter",
+    "Introduction-PART_OF->Chapter",
+    "Introduction-LEADS_TO->Section",
+    
+    "Conclusion-CONCLUDES->Chapter",
+    "Conclusion-PART_OF->Chapter",
+    "Conclusion-SUMMARIZES->Section",
+    
+    "Prerequisites-REQUIRES->Book",
+    "Prerequisites-DEFINES->BookRequirements",
+    "Prerequisites-PRECEDES->Chapter",
+    
+    "BookRequirements-REQUIRED_BY->Prerequisites",
+    "BookRequirements-APPLIES->Book",
+    "BookRequirements-DEFINES->ReadingApproach",
+    
+    "ReadingApproach-APPROACHES->Book",
+    "ReadingApproach-USES->ReadingMethod",
+    "ReadingApproach-APPLIES->ReadingActivity",
+    
+    "Genre-CATEGORIZES->Book",
+    "Genre-INCLUDES->Category",
+    "Genre-RELATES_TO->Subject",
+    
+    "Category-CATEGORIZES->Book",
+    "Category-PART_OF->Genre",
+    "Category-INCLUDES->Subject",
+    
+    "Subject-DESCRIBES->Book",
+    "Subject-PART_OF->Category",
+    "Subject-CONTAINS->Topic",
+    
+    "Topic-PART_OF->Subject",
+    "Topic-DESCRIBES->Chapter",
+    "Topic-RELATES_TO->Keyword",
+    
+    "Keyword-DESCRIBES->Book",
+    "Keyword-RELATES_TO->Topic",
+    "Keyword-TAGGED_AS->Tag",
+    
+    "Tag-TAGS->Book",
+    "Tag-RELATES_TO->Keyword",
+    "Tag-CATEGORIZES->Topic",
+    
+    "Metadata-DESCRIBES->Book",
+    "Metadata-CONTAINS->Format",
+    "Metadata-INCLUDES->Language",
+    "Metadata-SPECIFIES->License",
+    
+    "Format-FORMATS->Book",
+    "Format-PART_OF->Metadata",
+    "Format-DEFINES->BookContent",
+    
+    "Language-USED_IN->Book",
+    "Language-PART_OF->Metadata",
+    "Language-APPLIES->BookContent",
+    
+    "License-LICENSES->Book",
+    "License-PART_OF->Metadata",
+    "License-GOVERNS->BookContent",
+    
+    "Code-DEMONSTRATES->Concept",
+    "Code-PART_OF->Section",
+    "Code-ILLUSTRATES->Example",
+    
+    "Example-ILLUSTRATES->Definition",
+    "Example-PART_OF->Section",
+    "Example-DEMONSTRATES->Code",
+    
+    "Exercise-PRACTICES->Definition",
+    "Exercise-PART_OF->Section",
+    "Exercise-APPLIES->Code",
+    
+    "Definition-DEFINES->Concept",
+    "Definition-PART_OF->Section",
+    "Definition-ILLUSTRATED_BY->Example",
+    
+    "Formula-CALCULATES->Concept",
+    "Formula-PART_OF->Section",
+    "Formula-DEMONSTRATED_BY->Example",
+    
+    "Diagram-ILLUSTRATES->Concept",
+    "Diagram-PART_OF->Section",
+    "Diagram-SHOWS->Definition",
+    
+    "Image-ILLUSTRATES->Section",
+    "Image-PART_OF->Chapter",
+    "Image-SHOWS->Concept",
+    
+    "Table-ORGANIZES->Data",
+    "Table-PART_OF->Section",
+    "Table-SHOWS->Information",
+    
+    "Quote-QUOTES->Author",
+    "Quote-PART_OF->Section",
+    "Quote-REFERENCES->Source",
+    
+    "Note-EXPLAINS->Section",
+    "Note-PART_OF->Chapter",
+    "Note-CLARIFIES->Definition"
   ]
 }
 ]

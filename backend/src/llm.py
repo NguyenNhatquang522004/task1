@@ -186,10 +186,138 @@ def get_chunk_id_as_doc_metadata(chunkId_chunkDoc_list):
       
 
 async def get_graph_document_list(
-    llm, combined_chunk_document_list, allowedNodes, allowedRelationship, additional_instructions=None
+    llm, combined_chunk_document_list, allowedNodes, allowedRelationship, additional_instructions=None, schema=None, triplet=None
 ):
     if additional_instructions:
         additional_instructions = sanitize_additional_instruction(additional_instructions)
+    
+    # Load schema-specific triplets if schema is provided
+    effective_allowed_relationships = allowedRelationship
+    if schema and triplet and schema != 'default':
+        logging.info(f"Using schema-specific triplets for schema: {schema}")
+        try:
+            # Load triplet relationships from newSchema.json based on schema
+            import json
+            import os
+            
+            schema_file_path = os.path.join(os.path.dirname(__file__), "../..", "frontend", "src", "assets", "newSchema.json")
+            if os.path.exists(schema_file_path):
+                with open(schema_file_path, 'r', encoding='utf-8') as f:
+                    schema_data = json.load(f)
+                
+                # Find matching schema
+                schema_triplets = []
+                for item in schema_data:
+                    if item.get('schema') == schema:
+                        schema_triplets = item.get('triplet', [])
+                        break
+                
+                if schema_triplets:
+                    logging.info(f"Found {len(schema_triplets)} triplets for schema '{schema}'")
+                    # Convert triplets to allowed_relationships format
+                    schema_relationships = []
+                    for triplet_str in schema_triplets:
+                        if '->' in triplet_str:
+                            parts = triplet_str.split('->')
+                            if len(parts) == 2:
+                                source_rel = parts[0].split('-')
+                                target = parts[1].strip()
+                                if len(source_rel) >= 2:
+                                    source = source_rel[0].strip()
+                                    relation = '-'.join(source_rel[1:]).strip()
+                                    
+                                    # Validate that source and target are in allowedNodes
+                                    if (allowedNodes is None or 
+                                        (source in allowedNodes and target in allowedNodes)):
+                                        schema_relationships.append((source, relation, target))
+                                        logging.debug(f"Added valid triplet: ({source}, {relation}, {target})")
+                                    else:
+                                        logging.warning(f"Skipping triplet due to node validation: {source} -> {relation} -> {target}")
+                    
+                    if schema_relationships:
+                        effective_allowed_relationships = schema_relationships
+                        logging.info(f"Using {len(schema_relationships)} validated relationships from schema '{schema}'")
+                    else:
+                        logging.warning(f"No valid triplets found for schema '{schema}' after validation, using fallback")
+                        # Fallback to simple relationship strings from schema
+                        try:
+                            for item in schema_data:
+                                if item.get('schema') == schema:
+                                    schema_simple_relationships = item.get('relationshipTypes', [])
+                                    if schema_simple_relationships:
+                                        effective_allowed_relationships = schema_simple_relationships
+                                        logging.info(f"Using {len(schema_simple_relationships)} simple relationships from schema '{schema}'")
+                                    break
+                        except Exception as fallback_error:
+                            logging.error(f"Fallback schema loading error: {fallback_error}")
+                else:
+                    logging.warning(f"No triplets found for schema '{schema}', trying simple relationships")
+                    # Try to use simple relationshipTypes instead
+                    try:
+                        for item in schema_data:
+                            if item.get('schema') == schema:
+                                schema_simple_relationships = item.get('relationshipTypes', [])
+                                if schema_simple_relationships:
+                                    effective_allowed_relationships = schema_simple_relationships
+                                    logging.info(f"Using {len(schema_simple_relationships)} simple relationships from schema '{schema}'")
+                                break
+                    except Exception as simple_error:
+                        logging.error(f"Simple schema loading error: {simple_error}")
+            else:
+                logging.warning(f"Schema file not found: {schema_file_path}")
+        except Exception as e:
+            logging.error(f"Error loading schema triplets: {e}")
+            logging.info("Falling back to original allowed relationships")
+    
+    # Validate effective_allowed_relationships format before using with LLMGraphTransformer
+    validated_relationships = effective_allowed_relationships
+    if effective_allowed_relationships:
+        try:
+            # Check if it's a list of tuples (3-item format)
+            if isinstance(effective_allowed_relationships[0], tuple):
+                logging.info(f"Validating {len(effective_allowed_relationships)} relationship tuples")
+                valid_tuples = []
+                for rel in effective_allowed_relationships:
+                    if (isinstance(rel, tuple) and len(rel) == 3 and
+                        isinstance(rel[0], str) and isinstance(rel[1], str) and isinstance(rel[2], str)):
+                        # Check if source and target nodes are in allowedNodes (if specified)
+                        if allowedNodes is None or (rel[0] in allowedNodes and rel[2] in allowedNodes):
+                            valid_tuples.append(rel)
+                        else:
+                            logging.warning(f"Skipping invalid tuple (nodes not in allowedNodes): {rel}")
+                    else:
+                        logging.warning(f"Skipping malformed tuple: {rel}")
+                
+                if valid_tuples:
+                    validated_relationships = valid_tuples
+                    logging.info(f"Using {len(valid_tuples)} validated relationship tuples")
+                else:
+                    logging.warning("No valid relationship tuples found, falling back to strings")
+                    # Fallback to just the relationship names as strings
+                    validated_relationships = [rel[1] for rel in effective_allowed_relationships if isinstance(rel, tuple) and len(rel) >= 2]
+                    if not validated_relationships:
+                        validated_relationships = None
+                        logging.warning("Could not extract relationship strings from tuples")
+            
+            # If it's a list of strings, just validate they are strings
+            elif isinstance(effective_allowed_relationships[0], str):
+                validated_relationships = [rel for rel in effective_allowed_relationships if isinstance(rel, str) and rel.strip()]
+                logging.info(f"Using {len(validated_relationships)} string relationships")
+            
+            else:
+                logging.error(f"Unknown relationship format: {type(effective_allowed_relationships[0])}")
+                validated_relationships = None
+                
+        except (IndexError, TypeError) as e:
+            logging.error(f"Error validating relationships: {e}")
+            validated_relationships = None
+    
+    logging.info(f"Final validated_relationships type: {type(validated_relationships)}")
+    if validated_relationships:
+        logging.info(f"Final validated_relationships count: {len(validated_relationships)}")
+        if validated_relationships:
+            logging.info(f"Sample relationship: {validated_relationships[0]} (type: {type(validated_relationships[0])})")
+    
     graph_document_list = []
     if "diffbot_api_key" in dir(llm):
         llm_transformer = llm
@@ -204,15 +332,38 @@ async def get_graph_document_list(
         model_name = get_llm_model_name(llm)
         ignore_tool_usage = not any(pattern in model_name for pattern in TOOL_SUPPORTED_MODELS)
         logging.info(f"Keeping ignore tool usage parameter as {ignore_tool_usage}")
-        llm_transformer = LLMGraphTransformer(
-            llm=llm,
-            node_properties=node_properties,
-            relationship_properties=relationship_properties,
-            allowed_nodes=allowedNodes,
-            allowed_relationships=allowedRelationship,
-            ignore_tool_usage=ignore_tool_usage,
-            additional_instructions=additional_instructions if additional_instructions else ADDITIONAL_INSTRUCTIONS
-        )
+        
+        try:
+            llm_transformer = LLMGraphTransformer(
+                llm=llm,
+                node_properties=node_properties,
+                relationship_properties=relationship_properties,
+                allowed_nodes=allowedNodes,
+                allowed_relationships=validated_relationships,
+                ignore_tool_usage=ignore_tool_usage,
+                additional_instructions=additional_instructions if additional_instructions else ADDITIONAL_INSTRUCTIONS
+            )
+        except ValueError as ve:
+            logging.error(f"Error creating LLMGraphTransformer with validated relationships: {ve}")
+            # Final fallback - try with no relationship constraints
+            logging.info("Attempting final fallback with no relationship constraints")
+            try:
+                llm_transformer = LLMGraphTransformer(
+                    llm=llm,
+                    node_properties=node_properties,
+                    relationship_properties=relationship_properties,
+                    allowed_nodes=allowedNodes,
+                    allowed_relationships=None,  # Remove all relationship constraints
+                    ignore_tool_usage=ignore_tool_usage,
+                    additional_instructions=additional_instructions if additional_instructions else ADDITIONAL_INSTRUCTIONS
+                )
+                logging.info("Successfully created LLMGraphTransformer without relationship constraints")
+            except Exception as final_error:
+                logging.error(f"Final fallback also failed: {final_error}")
+                raise
+        except Exception as e:
+            logging.error(f"Unexpected error creating LLMGraphTransformer: {e}")
+            raise
     
     if isinstance(llm,DiffbotGraphTransformer):
         graph_document_list = llm_transformer.convert_to_graph_documents(combined_chunk_document_list)
@@ -220,7 +371,7 @@ async def get_graph_document_list(
         graph_document_list = await llm_transformer.aconvert_to_graph_documents(combined_chunk_document_list)
     return graph_document_list
 
-async def get_graph_from_llm(model, chunkId_chunkDoc_list, allowedNodes, allowedRelationship, chunks_to_combine, additional_instructions=None):
+async def get_graph_from_llm(model, chunkId_chunkDoc_list, allowedNodes, allowedRelationship, chunks_to_combine, additional_instructions=None, schema=None, triplet=None):
    try:
        llm, model_name = get_llm(model)
        logging.info(f"Using model: {model_name}")
@@ -228,32 +379,68 @@ async def get_graph_from_llm(model, chunkId_chunkDoc_list, allowedNodes, allowed
        combined_chunk_document_list = get_combined_chunks(chunkId_chunkDoc_list, chunks_to_combine)
        logging.info(f"Combined {len(combined_chunk_document_list)} chunks")
     
-       allowed_nodes = [node.strip() for node in allowedNodes.split(',') if node.strip()]
+       # Parse allowed nodes - handle different input formats
+       if isinstance(allowedNodes, str):
+           allowed_nodes = [node.strip() for node in allowedNodes.split(',') if node.strip()]
+       elif isinstance(allowedNodes, list):
+           allowed_nodes = allowedNodes
+       elif allowedNodes is None:
+           allowed_nodes = []
+       else:
+           logging.warning(f"Unexpected allowedNodes type: {type(allowedNodes)}. Using empty list.")
+           allowed_nodes = []
        logging.info(f"Allowed nodes: {allowed_nodes}")
     
+       # Parse allowed relationships - handle different input formats and validate properly
        allowed_relationships = []
-       if allowedRelationship:
-           items = [item.strip() for item in allowedRelationship.split(',') if item.strip()]
-           if len(items) % 3 != 0:
-               raise LLMGraphBuilderException("allowedRelationship must be a multiple of 3 (source, relationship, target)")
-           for i in range(0, len(items), 3):
-               source, relation, target = items[i:i + 3]
-               if source not in allowed_nodes or target not in allowed_nodes:
-                   raise LLMGraphBuilderException(
-                       f"Invalid relationship ({source}, {relation}, {target}): "
-                       f"source or target not in allowedNodes"
-                   )
-               allowed_relationships.append((source, relation, target))
-           logging.info(f"Allowed relationships: {allowed_relationships}")
+       logging.info(f"Raw allowedRelationship input: {allowedRelationship} (type: {type(allowedRelationship)})")
+       
+       if allowedRelationship is not None and allowedRelationship != "":
+           # Handle string input
+           if isinstance(allowedRelationship, str):
+               # Skip empty strings or strings with just whitespace
+               if allowedRelationship.strip():
+                   items = [item.strip() for item in allowedRelationship.split(',') if item.strip()]
+                   if len(items) % 3 != 0:
+                       logging.warning(f"allowedRelationship string has {len(items)} items, not a multiple of 3. Using empty relationships.")
+                       allowed_relationships = []
+                   else:
+                       for i in range(0, len(items), 3):
+                           source, relation, target = items[i:i + 3]
+                           if source not in allowed_nodes or target not in allowed_nodes:
+                               logging.warning(f"Invalid relationship ({source}, {relation}, {target}): source or target not in allowedNodes. Skipping.")
+                               continue
+                           allowed_relationships.append((source, relation, target))
+               else:
+                   logging.info("Empty allowedRelationship string provided")
+           # Handle list input
+           elif isinstance(allowedRelationship, list):
+               if len(allowedRelationship) % 3 != 0:
+                   logging.warning(f"allowedRelationship list has {len(allowedRelationship)} items, not a multiple of 3. Using empty relationships.")
+                   allowed_relationships = []
+               else:
+                   for i in range(0, len(allowedRelationship), 3):
+                       source, relation, target = allowedRelationship[i:i + 3]
+                       if source not in allowed_nodes or target not in allowed_nodes:
+                           logging.warning(f"Invalid relationship ({source}, {relation}, {target}): source or target not in allowedNodes. Skipping.")
+                           continue
+                       allowed_relationships.append((source, relation, target))
+           else:
+               logging.warning(f"Unexpected allowedRelationship type: {type(allowedRelationship)}. Using empty relationships.")
+               allowed_relationships = []
+           
+           logging.info(f"Parsed allowed relationships: {allowed_relationships}")
        else:
-           logging.info("No allowed relationships provided")
+           logging.info("No allowed relationships provided (None or empty string)")
 
        graph_document_list = await get_graph_document_list(
            llm,
            combined_chunk_document_list,
            allowed_nodes,
            allowed_relationships,
-           additional_instructions
+           additional_instructions,
+           schema,
+           triplet
        )
        logging.info(f"Generated {len(graph_document_list)} graph documents")
        return graph_document_list

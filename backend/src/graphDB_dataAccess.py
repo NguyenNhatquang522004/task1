@@ -52,7 +52,9 @@ class graphDBdataAccess:
                             d.access_token=$access_token, d.schema=$schema,
                             d.chunkNodeCount=$chunkNodeCount,d.chunkRelCount=$chunkRelCount,
                             d.entityNodeCount=$entityNodeCount,d.entityEntityRelCount=$entityEntityRelCount,
-                            d.communityNodeCount=$communityNodeCount,d.communityRelCount=$communityRelCount""",
+                            d.communityNodeCount=$communityNodeCount,d.communityRelCount=$communityRelCount,
+                            d.course_code=$course_code, d.folder_name=$folder_name, 
+                            d.triplet=$triplet, d.additional_instructions=$additional_instructions""",
                             {"fn":obj_source_node.file_name, "fs":obj_source_node.file_size, "ft":obj_source_node.file_type, "st":job_status, 
                             "url":obj_source_node.url,
                             "awsacc_key_id":obj_source_node.awsAccessKeyId, "f_source":obj_source_node.file_source, "c_at":obj_source_node.created_at,
@@ -65,7 +67,11 @@ class graphDBdataAccess:
                             "entityNodeCount":obj_source_node.entityNodeCount,
                             "entityEntityRelCount":obj_source_node.entityEntityRelCount,
                             "communityNodeCount":obj_source_node.communityNodeCount,
-                            "communityRelCount":obj_source_node.communityRelCount
+                            "communityRelCount":obj_source_node.communityRelCount,
+                            "course_code":obj_source_node.course_code,
+                            "folder_name":obj_source_node.folder_name,
+                            "triplet":obj_source_node.triplet,
+                            "additional_instructions":obj_source_node.additional_instructions
                             },session_params={"database":self.graph._database})
         except Exception as e:
             error_message = str(e)
@@ -115,6 +121,12 @@ class graphDBdataAccess:
 
             if obj_source_node.schema is not None and obj_source_node.schema != '':
                 params['schema'] = obj_source_node.schema
+
+            if obj_source_node.triplet is not None and obj_source_node.triplet != '':
+                params['triplet'] = obj_source_node.triplet
+
+            if obj_source_node.additional_instructions is not None and obj_source_node.additional_instructions != '':
+                params['additional_instructions'] = obj_source_node.additional_instructions
 
             param= {"props":params}
             
@@ -286,7 +298,10 @@ class graphDBdataAccess:
                 d.entityEntityRelCount AS entityEntityRelCount,
                 d.communityNodeCount AS communityNodeCount,
                 d.communityRelCount AS communityRelCount,
-                d.createdAt AS created_time
+                d.createdAt AS created_time,
+                d.schema AS schema,
+                d.triplet AS triplet,
+                d.additional_instructions AS additional_instructions
                 """
         param = {"file_name" : file_name}
         try:

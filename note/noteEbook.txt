@@ -1,0 +1,269 @@
+ADDITIONAL_INSTRUCTIONS = """Your goal is to identify and categorize ebook content entities while maintaining proper hierarchical relationships. Focus on extracting:
+
+1. **Ebook Structure**: Book, chapters, sections, subsections and their hierarchical relationships using specific hierarchical relationship types
+
+**HIERARCHICAL STRUCTURE EXPLANATION**:
+The ebook content follows a strict 4-level hierarchy with specific relationship types:
+
+**Level 1 - Book**: The entire ebook/publication (e.g., "Lập trình Python cơ bản", "Thiết kế cơ sở dữ liệu")
+**Level 2 - Chapter**: Major content areas within the book (e.g., "Chương 1", "Chapter 1", "Bài 1") 
+**Level 3 - Section**: Specific content units within a chapter (e.g., "1.1", "1.2", "1.3")
+**Level 4 - SubSection**: Detailed breakdowns within a section (e.g., "1.1.1", "1.1.2", "1.2.1")
+
+**HIERARCHICAL RELATIONSHIPS**:
+```
+Institution → Organization → Library → Book → Chapter → Section → SubSection
+   MANAGES      OFFERS      HOSTS   HAS_CHAPTER  HAS_SECTION  HAS_SUBSECTION
+```
+
+**NUMBERING SYSTEM EXAMPLES**:
+```
+Book: "Lập trình Java cơ bản"
+├── Chapter: "Chương 1: Giới thiệu Java" (Book HAS_CHAPTER Chapter)
+│   ├── Section: "1.1 Lịch sử và đặc điểm Java" (Chapter HAS_SECTION Section)
+│   │   ├── SubSection: "1.1.1 Nguồn gốc của Java" (Section HAS_SUBSECTION SubSection)
+│   │   ├── SubSection: "1.1.2 Đặc điểm chính của Java"
+│   │   └── SubSection: "1.1.3 Ưu điểm của Java"
+│   ├── Section: "1.2 Cài đặt môi trường Java"
+│   │   ├── SubSection: "1.2.1 Cài đặt JDK"
+│   │   └── SubSection: "1.2.2 Cài đặt IDE"
+│   └── Section: "1.3 Chương trình Java đầu tiên"
+│       ├── SubSection: "1.3.1 Cấu trúc chương trình"
+│       └── SubSection: "1.3.2 Biên dịch và chạy"
+├── Chapter: "Chương 2: Cú pháp cơ bản"
+│   ├── Section: "2.1 Biến và kiểu dữ liệu"
+│   └── Section: "2.2 Toán tử và biểu thức"
+```
+
+**IDENTIFICATION GUIDELINES**:
+- **Book**: Usually mentioned in book title, cover, or main publication name
+- **Chapter**: Broad thematic areas, often numbered as "Chương X", "Chapter X", "Bài X" (typically 5-15 chapters per book)
+- **Section**: Specific content units, often numbered as "X.Y" format (typically 3-8 sections per chapter)  
+- **SubSection**: Detailed sub-components, often numbered as "X.Y.Z" format (typically 2-5 subsections per section)
+
+**CONTENT RELATIONSHIP**:
+- Each level has content: "ContentOfChapter", "ContentOfSection", "ContentOfSubSection"
+- Content includes the actual material, text, explanations at that level using CONTAINS relationship
+- Examples, Exercises, Definitions, Code belong to the content of their respective level using BELONGS_TO relationship
+
+2. **Content Components**: Definitions, examples, exercises, code/formula snippets, images, tables, diagrams as distinct entities  
+3. **People and Organizations**: Authors, readers, publishers, institutions involved
+4. **Reading Components**: Reading objectives, outcomes, activities, and resources
+5. **References**: Citations, bibliography, external sources, and supplementary materials
+6. **Dependencies**: Relationships between different components, such as prerequisites or dependencies between sections
+7. **Book Metadata**: BookDescription, BookContent, Prerequisites, BookRequirements, ReadingApproach, Abstract, Introduction, Conclusion
+8. **Navigation Structure**: TableOfContents, ChapterOfTableOfContents, SectionOfTableOfContents, SubSectionOfTableOfContents
+9. **Technical Entities**: Programming constructs, methodologies, tools, technologies, formulas mentioned
+
+**VALID ENTITY LABELS (use exactly these)**:
+Book Structure: Book, Chapter, ContentOfChapter, Section, ContentOfSection, SubSection, ContentOfSubSection, Paragraph, ContentOfParagraph
+Content Elements: Code, Example, Exercise, Definition, Formula, Diagram, Image, Table, Quote, Note
+Reading Components: ReadingObjective, ReadingOutcome, ReadingActivity, ReadingResource, ReadingMaterial, ReadingMethod, ReadingTool, ReadingEnvironment, ReadingPlatform, LearningGoal, KeyTakeaway
+People & Organizations: Author, CoAuthor, Editor, Translator, Reviewer, Reader, Publisher, Organization, Institution, Library
+Resources: Reference, Bibliography, Citation, Source
+Navigation: TableOfContents, ChapterOfTableOfContents, SectionOfTableOfContents, SubSectionOfTableOfContents
+Publication: Edition, Series, Volume
+Book Metadata: BookDescription, BookContent, ChapterSummary, Abstract, Introduction, Conclusion, Prerequisites, BookRequirements, ReadingApproach
+Classification: Genre, Category, Subject, Topic, Keyword, Tag
+Technical: Metadata, Format, Language, License
+
+**VALID RELATIONSHIPS (use exactly these)**:
+
+**Hierarchical Relationships:**
+- **HAS_CHAPTER**: Book has chapters (Book HAS_CHAPTER Chapter)
+- **HAS_SECTION**: Chapter has sections (Chapter HAS_SECTION Section)
+- **HAS_SUBSECTION**: Section has subsections (Section HAS_SUBSECTION SubSection)
+- **HAS_PARAGRAPH**: SubSection has paragraphs (SubSection HAS_PARAGRAPH Paragraph)
+
+**Content Relationships:**
+- **CONTAINS**: Parent contains content element 
+  * Book CONTAINS TableOfContents
+  * Chapter CONTAINS ContentOfChapter
+  * Section CONTAINS ContentOfSection  
+  * SubSection CONTAINS ContentOfSubSection
+  * Paragraph CONTAINS ContentOfParagraph
+  * TableOfContents CONTAINS navigation elements
+
+- **BELONGS_TO**: Child belongs to parent content
+  * ContentOfChapter BELONGS_TO Chapter
+  * ContentOfSection BELONGS_TO Section
+  * ContentOfSubSection BELONGS_TO SubSection
+  * ContentOfParagraph BELONGS_TO Paragraph
+  * Chapter BELONGS_TO Book
+  * Section BELONGS_TO Chapter  
+  * SubSection BELONGS_TO Section
+  * Paragraph BELONGS_TO SubSection
+  * Example/Exercise/Definition/Code BELONGS_TO their respective content level
+
+- **PART_OF**: Structural relationship
+  * Chapter PART_OF Book
+  * Section PART_OF Chapter
+  * SubSection PART_OF Section
+
+**Other Relationships:**
+- **REFERENCES**: Navigation/citation points to content (ChapterOfTableOfContents REFERENCES Chapter, Citation REFERENCES Source)
+- **DESCRIBES**: Metadata describes main entity (BookDescription DESCRIBES Book)
+- **READS**: Reader relationship (Reader READS Book)
+- **WRITES**: Author relationship (Author WRITES Book)
+- **AUTHORS**: Authorship (Author AUTHORS Book)
+- **CO_AUTHORS**: Co-authorship (Author CO_AUTHORS CoAuthor)
+- **EDITS**: Editorial relationship (Editor EDITS Book)
+- **TRANSLATES**: Translation relationship (Translator TRANSLATES Book)
+- **REVIEWS**: Review relationship (Reviewer REVIEWS Book)
+- **PUBLISHES**: Publishing relationship (Publisher PUBLISHES Book)
+- **MANAGES**: Administrative control (Institution MANAGES Organization)
+- **OFFERS**: Provision relationship (Organization OFFERS Library)
+- **HOSTS**: Hosting relationship (Library HOSTS Book)
+- **REQUIRES**: Prerequisite relationship (Book REQUIRES Prerequisites)
+- **ACHIEVES**: Goal attainment (ReadingActivity ACHIEVES ReadingObjective)
+- **USES**: Utilization relationship (Reader USES ReadingResource, ReadingActivity USES ReadingTool)
+- **SUPPORTS**: Supporting relationship (ReadingResource SUPPORTS ReadingActivity, Reference SUPPORTS Book)
+- **LEADS_TO**: Sequential relationship (ReadingObjective LEADS_TO ReadingOutcome)
+- **IMPLEMENTS**: Technical implementation (Code IMPLEMENTS Definition)
+- **EXTENDS**: Extension relationship (SubSection EXTENDS Section)
+- **DEMONSTRATES**: Illustration relationship (Example DEMONSTRATES Definition)
+- **ILLUSTRATES**: Visual relationship (Diagram ILLUSTRATES Definition, Image ILLUSTRATES Section)
+- **EXPLAINS**: Clarification relationship (Definition EXPLAINS Concept)
+- **DEFINES**: Definition relationship (Definition DEFINES Concept)
+- **QUOTES**: Citation relationship (Quote QUOTES Author)
+- **MENTIONS**: Reference relationship (Text MENTIONS Keyword)
+- **CITES**: Citation relationship (Bibliography CITES Reference)
+- **INCLUDES**: Inclusion relationship (Chapter INCLUDES Section)
+- **CATEGORIZED_AS**: Classification relationship (Book CATEGORIZED_AS Category)
+- **TAGGED_AS**: Tagging relationship (Book TAGGED_AS Tag)
+- **RELATES_TO**: Association relationship (Topic RELATES_TO Keyword)
+- **LINKS_TO**: Linking relationship (Reference LINKS_TO Source)
+- **CONNECTS_TO**: Connection relationship (Section CONNECTS_TO SubSection)
+- **FOLLOWS**: Sequential relationship (Chapter FOLLOWS Chapter)
+- **PRECEDES**: Precedence relationship (Section PRECEDES Section)
+- **CONTINUES**: Continuation relationship (SubSection CONTINUES Section)
+- **RATES**: Rating relationship (Reader RATES Book)
+- **COMMENTS_ON**: Commentary relationship (Reviewer COMMENTS_ON Book)
+- **RECOMMENDS**: Recommendation relationship (Author RECOMMENDS Book)
+
+**Important Guidelines**: 
+
+**STRICT HIERARCHY WITH SPECIFIC RELATIONSHIPS**:
+- **Institution Level**: Institution MANAGES Organization
+- **Organization Level**: Organization OFFERS Library  
+- **Library Level**: Library HOSTS Book
+- **Book Level**: Book HAS_CHAPTER Chapter (never directly has Section or SubSection)
+- **Chapter Level**: Chapter HAS_SECTION Section (never directly has SubSection)  
+- **Section Level**: Section HAS_SUBSECTION SubSection
+- **SubSection Level**: SubSection HAS_PARAGRAPH Paragraph
+- **Content Relationships**: Use CONTAINS for content and BELONGS_TO for reverse relationships
+
+**CONTENT DISTRIBUTION**: 
+- Examples, Exercises, Definitions, Code, Images, Tables, Diagrams BELONGS_TO their respective content level
+- ContentOfChapter contains material that introduces/overviews the entire chapter
+- ContentOfSection contains material specific to that section
+- ContentOfSubSection contains detailed explanations of subsection components
+- ContentOfParagraph contains the actual text content
+
+**NAVIGATION STRUCTURE**:
+- Book CONTAINS TableOfContents
+- TableOfContents CONTAINS ChapterOfTableOfContents
+- ChapterOfTableOfContents CONTAINS SectionOfTableOfContents  
+- SectionOfTableOfContents CONTAINS SubSectionOfTableOfContents
+- Navigation elements REFERENCES their corresponding content (ChapterOfTableOfContents REFERENCES Chapter, etc.)
+
+**METADATA RELATIONSHIPS**:
+- BookDescription, BookContent, Prerequisites, BookRequirements, ReadingApproach, Abstract, Introduction, Conclusion all DESCRIBE Book
+- ChapterSummary DESCRIBES Chapter
+
+**BOOK METADATA HANDLING**:
+Book metadata should be extracted as separate entities that DESCRIBE the main Book entity. These are typically found in:
+- **Book Introduction/Overview sections**: "Giới thiệu sách", "Tóm tắt nội dung", "Book Overview"
+- **Prerequisite sections**: "Kiến thức cần thiết", "Prerequisites", "Required Background"  
+- **Requirements sections**: "Yêu cầu người đọc", "Reading Requirements"
+- **Content outline sections**: "Nội dung sách", "Book Content", "Table of Contents"
+- **Reading approach sections**: "Cách sử dụng sách", "How to read this book"
+- **Abstract/Summary sections**: "Tóm tắt", "Abstract", "Summary"
+
+**IMPORTANT**: Do NOT extract these metadata descriptions as Chapters, Sections, or SubSections. They are BOOK-LEVEL information that describes the entire book, not content chapters.
+
+**READING RELATIONSHIPS**:
+- ReadingObjective LEADS_TO ReadingOutcome
+- ReadingActivity ACHIEVES ReadingObjective
+- Various SUPPORTS relationships between reading components
+- Author WRITES Book, Reader READS Book
+
+**PRACTICAL EXAMPLES**:
+```
+Book: "Lập trình Python từ cơ bản đến nâng cao"
+
+BOOK METADATA (extract as separate entities that DESCRIBE Book):
+├── BookDescription: "Cuốn sách cung cấp kiến thức toàn diện về lập trình Python..."
+├── Prerequisites: "Người đọc cần có kiến thức cơ bản về máy tính..."  
+├── BookRequirements: "Máy tính có cài đặt Python 3.8 trở lên..."
+├── ReadingApproach: "Đọc tuần tự từ chương 1 đến chương cuối..."
+├── Abstract: "Python là ngôn ngữ lập trình mạnh mẽ và dễ học..."
+└── BookContent: "Chương 1: Giới thiệu Python..., Chương 2: Cú pháp cơ bản..."
+
+CONTENT STRUCTURE (extract using hierarchy):
+├── Chapter: "Chương 1: Giới thiệu Python"
+│   ├── Section: "1.1 Lịch sử Python"
+│   │   ├── SubSection: "1.1.1 Nguồn gốc và phát triển"
+│   │   └── SubSection: "1.1.2 Phiên bản Python"
+│   ├── Section: "1.2 Đặc điểm của Python"
+│   └── Section: "1.3 Cài đặt Python"
+├── Chapter: "Chương 2: Cú pháp cơ bản"
+│   ├── Section: "2.1 Biến và kiểu dữ liệu"
+│   └── Section: "2.2 Toán tử"
+```
+
+**KEY DISTINCTION**:
+- Book metadata appears in **introduction/preface sections** and describes the **entire book**
+- Content structure appears in **numbered chapters/sections** and contains **actual reading material**
+
+**VALIDATION CHECKLIST**:
+✅ Use HAS_CHAPTER, HAS_SECTION, HAS_SUBSECTION, HAS_PARAGRAPH for main hierarchy
+✅ Use CONTAINS for content relationships  
+✅ Use BELONGS_TO for reverse content relationships
+✅ Every navigation element REFERENCES its corresponding content
+✅ All metadata entities DESCRIBE the Book
+✅ Reading components use appropriate SUPPORTS, ACHIEVES, LEADS_TO relationships
+✅ Examples, Exercises, Definitions, Code belong to content entities, not directly to structural entities
+✅ **METADATA VALIDATION**: Book metadata entities (BookDescription, Prerequisites, etc.) are separate from content hierarchy
+✅ **CONTENT VALIDATION**: Only numbered chapters/sections become Chapters/Sections/SubSections
+✅ **RELATIONSHIP VALIDATION**: Book metadata uses DESCRIBES relationship, not hierarchical relationships
+
+**COMMON MISTAKES TO AVOID**:
+- ❌ Using CONTAINS instead of HAS_CHAPTER/HAS_SECTION/HAS_SUBSECTION for main hierarchy
+- ❌ Book directly HAS_SECTION or HAS_SUBSECTION (must go through Chapter level)
+- ❌ Chapter directly HAS_SUBSECTION (must go through Section level)
+- ❌ Missing "ContentOfX" entities for each hierarchy level
+- ❌ Not using specific hierarchical relationships (HAS_CHAPTER, HAS_SECTION, HAS_SUBSECTION)
+- ❌ Connecting Examples/Exercises/Definitions directly to structural entities instead of content entities
+- ❌ **CRITICAL**: Treating book metadata (BookDescription, Prerequisites, Abstract) as Chapters or Sections
+- ❌ **CRITICAL**: Extracting book overview information as content chapters
+- ❌ **CRITICAL**: Confusing book-level reading objectives with chapter-level reading objectives
+
+**METADATA vs CONTENT DISTINCTION**:
+- **Book Metadata**: Overall book information, prerequisites, general reading outcomes for entire book
+- **Content Structure**: Actual reading material organized in Chapters → Sections → SubSections with specific Examples, Exercises, Definitions, Code
+
+**Avoid extracting as separate entities**: Page numbers, line numbers, specific dates, file sizes, individual statements unless they represent key concepts being taught. **NEVER extract book metadata sections as Chapters, Sections, or SubSections**.
+
+**CONTENT ELEMENT GUIDELINES**:
+- **Code**: Programming code snippets, algorithms, formulas
+- **Example**: Illustrative examples, sample problems, case studies
+- **Exercise**: Practice problems, assignments, questions
+- **Definition**: Formal definitions, terminology explanations
+- **Formula**: Mathematical formulas, equations
+- **Diagram**: Technical diagrams, flowcharts, UML diagrams
+- **Image**: Pictures, screenshots, illustrations
+- **Table**: Data tables, comparison tables, reference tables
+- **Quote**: Citations from other sources, expert opinions
+- **Note**: Additional notes, tips, warnings, side information
+
+**READING COMPONENT GUIDELINES**:
+- **ReadingObjective**: What the reader should achieve from a chapter/section
+- **ReadingOutcome**: Expected results after reading
+- **ReadingActivity**: Interactive reading exercises, assignments
+- **ReadingResource**: Additional materials, links, references
+- **ReadingMaterial**: Supplementary documents, handouts
+- **ReadingMethod**: Suggested reading approaches, techniques
+- **ReadingTool**: Software tools, applications needed for reading
+- **LearningGoal**: Educational goals for the reader
+- **KeyTakeaway**: Main points to remember from each section

@@ -1,0 +1,2 @@
+Đây là file test để kiểm tra schema auto-detection.
+File này nằm trong folder "test_upload_decuong" để test mapping với đề cương.

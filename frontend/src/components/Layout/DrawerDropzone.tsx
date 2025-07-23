@@ -1,6 +1,7 @@
-import React, { useMemo, Suspense, lazy } from 'react';
-import { Drawer, Flex, StatusIndicator, Typography, useMediaQuery } from '@neo4j-ndl/react';
+import React, { useMemo, Suspense, lazy, useState } from 'react';
+import { Drawer, Flex, StatusIndicator, Typography, useMediaQuery, Tabs } from '@neo4j-ndl/react';
 import DropZone from '../DataSources/Local/DropZone';
+import FolderDropZone from '../DataSources/Local/FolderDropZone';
 import S3Component from '../DataSources/AWS/S3Bucket';
 import GCSButton from '../DataSources/GCS/GCSButton';
 import CustomAlert from '../UI/Alert';
@@ -24,6 +25,7 @@ const DrawerDropzone: React.FC<DrawerProps> = ({
   showGCSModal,
   showGenericModal,
 }) => {
+  const [localUploadMode, setLocalUploadMode] = useState<number>(0);
   const { closeAlert, alertState } = useAlertContext();
   const { isReadOnlyUser, isBackendConnected, connectionStatus } = useCredentials();
   const { loginWithRedirect } = useAuth0();
@@ -86,7 +88,13 @@ const DrawerDropzone: React.FC<DrawerProps> = ({
                     <Flex gap='6' className='h-full source-container'>
                       {APP_SOURCES.includes('local') && (
                         <div className='px-6 outline-dashed outline-2 outline-offset-2 outline-gray-100 mt-3 imageBg'>
-                          <DropZone />
+                          <div className="mb-4">
+                            <Tabs size="small" fill="underline" value={localUploadMode} onChange={(selectedTabId) => setLocalUploadMode(selectedTabId)}>
+                              <Tabs.Tab tabId={0}>Upload Files</Tabs.Tab>
+                              <Tabs.Tab tabId={1}>Upload Folders</Tabs.Tab>
+                            </Tabs>
+                          </div>
+                          {localUploadMode === 0 ? <DropZone /> : <FolderDropZone />}
                         </div>
                       )}
                       {APP_SOURCES.some((source) => ['youtube', 'wiki', 'web'].includes(source)) && (

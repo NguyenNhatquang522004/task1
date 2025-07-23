@@ -33,41 +33,148 @@ import urllib.parse
 import json
 from src.shared.llm_graph_builder_exception import LLMGraphBuilderException
 
-# Import comprehensive logging system
-from src.process_logger import create_process_logger, log_process_step, log_processing_step, log_data_transformation
-from src.custom_logging_config import (
-    create_custom_logging_config, 
-    get_custom_formatters, 
-    get_custom_hooks,
-    create_development_logger,
-    create_production_logger
-)
+# Import comprehensive logging system - TEMPORARILY DISABLED TO AVOID IMPORT ERRORS
+# from src.process_logger import create_process_logger, log_process_step, log_processing_step, log_data_transformation
+# from src.custom_logging_config import (
+#     create_custom_logging_config, 
+#     get_custom_formatters, 
+#     get_custom_hooks,
+#     create_development_logger,
+#     create_production_logger
+# )
 import time
 import os
 
-# Initialize enhanced logging based on environment
-environment = os.getenv('ENVIRONMENT', 'development')
-if environment == 'production':
-    process_logger = create_production_logger()
-elif environment == 'development':
-    process_logger = create_development_logger()
-else:
-    # Use custom configuration
-    config = create_custom_logging_config()
-    process_logger = create_process_logger(
-        log_level=config["log_level"],
-        log_directory=config["log_directory"],
-        enable_console_logging=config["enable_console_logging"],
-        enable_file_logging=config["enable_file_logging"],
-        enable_performance_tracking=config["enable_performance_tracking"],
-        enable_data_anonymization=config["enable_data_anonymization"],
-        max_data_preview_length=config["max_data_preview_length"],
-        custom_formatters=get_custom_formatters()
-    )
+# Initialize basic logging to avoid crashes
+logger = logging.getLogger(__name__)
+process_logger = None
+
+def safe_log_step(step_name, description, details=None):
+    """Safe logging function to replace safe_log_step"""
+    logging.info(f"[{step_name}] {description}")
+    if details:
+        logging.info(f"Details: {details}")
+
+def safe_log_data_flow(step_name, input_data, output_data=None, duration=None, metadata=None):
+    """Safe logging function to replace process_logger.log_data_flow"""
+    logging.info(f"[DATA_FLOW] {step_name}")
+    if input_data:
+        logging.info(f"Input: {input_data}")
+    if output_data:
+        logging.info(f"Output: {output_data}")
+    if duration:
+        logging.info(f"Duration: {duration:.2f}s")
+    if metadata:
+        logging.info(f"Metadata: {metadata}")
+
+def safe_log_performance_bottleneck(step_name, duration, details=None):
+    """Safe logging function to replace safe_log_performance_bottleneck"""
+    logging.warning(f"[PERFORMANCE] {step_name} - Duration: {duration}")
+    if details:
+        logging.warning(f"Details: {details}")
+
+def safe_log_custom_metric(metric_name, value, category, metadata=None):
+    """Safe logging function to replace safe_log_custom_metric"""
+    logging.info(f"[METRIC] {category}.{metric_name}: {value}")
+    if metadata:
+        logging.info(f"Metadata: {metadata}")
+
+def safe_end_process(final_status, summary=None):
+    """Safe logging function to replace safe_end_process"""
+    logging.info(f"[PROCESS_END] Status: {final_status}")
+    if summary:
+        logging.info(f"Summary: {summary}")
+    return {}
+
+def safe_get_process_insights():
+    """Safe logging function to replace safe_get_process_insights"""
+    logging.info("[INSIGHTS] Process insights requested")
+    return {}
     
-    # Add custom hooks for monitoring
-    for hook_name, hook_func in get_custom_hooks().items():
-        process_logger.add_custom_hook(hook_name, hook_func)
+def get_schema_info_from_folder_name(folder_name):
+    """
+    Map folder_name to schema, triplet, and ADDITIONAL_INSTRUCTIONS
+    
+    Args:
+        folder_name (str): The folder name to map
+        
+    Returns:
+        dict: Contains schema, triplet, and additional_instructions
+    """
+    if not folder_name:
+        return {
+            'schema': 'default',
+            'triplet': [],
+            'additional_instructions': ''
+        }
+    
+    folder_name_lower = folder_name.lower().strip()
+    
+    # Mapping rules based on folder_name
+    if 'đề cương' in folder_name_lower or 'de cuong' in folder_name_lower:
+        return {
+            'schema': 'decuong',
+            'triplet': 'decuong',
+            'additional_instructions_file': 'note/notedecuong.txt'
+        }
+    elif ('giáo trình' in folder_name_lower or 'giao trinh' in folder_name_lower or 
+          'chính thức' in folder_name_lower or 'chinh thuc' in folder_name_lower):
+        return {
+            'schema': 'giaotrinh', 
+            'triplet': 'giaotrinh',
+            'additional_instructions_file': 'note/notegiaotrinh.txt'
+        }
+    elif ('tham khảo' in folder_name_lower or 'tham khao' in folder_name_lower or
+          'ngoại bộ' in folder_name_lower or 'ngoai bo' in folder_name_lower or
+          'nội bộ' in folder_name_lower or 'noi bo' in folder_name_lower):
+        return {
+            'schema': 'ebook',
+            'triplet': 'ebook', 
+            'additional_instructions_file': 'note/noteEbook.txt'
+        }
+    else:
+        # Default mapping for unknown folder names
+        return {
+            'schema': 'default',
+            'triplet': 'default',
+            'additional_instructions_file': None
+        }
+
+def load_additional_instructions(file_path):
+    """
+    Load ADDITIONAL_INSTRUCTIONS from file
+    
+    Args:
+        file_path (str): Path to the instructions file
+        
+    Returns:
+        str: Content of the instructions file
+    """
+    try:
+        # Get the base directory (should be llm-graph-builder)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Go up two levels: backend/src -> backend -> llm-graph-builder  
+        base_dir = os.path.dirname(os.path.dirname(current_dir))
+        full_path = os.path.join(base_dir, file_path)
+        
+        logger.info(f"🔍 Loading additional instructions:")
+        logger.info(f"  - Current dir: {current_dir}")
+        logger.info(f"  - Base dir: {base_dir}")
+        logger.info(f"  - File path: {file_path}")
+        logger.info(f"  - Full path: {full_path}")
+        logger.info(f"  - File exists: {os.path.exists(full_path)}")
+        
+        if not os.path.exists(full_path):
+            logger.warning(f"File not found: {full_path}")
+            return ''
+            
+        with open(full_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            logger.info(f"✅ Successfully loaded {len(content)} characters from {file_path}")
+            return content.strip()
+    except Exception as e:
+        logger.error(f"❌ Could not load additional instructions from {file_path}: {e}")
+        return ''
 
 warnings.filterwarnings("ignore")
 load_dotenv()
@@ -346,24 +453,8 @@ async def processing_source(uri, userName, password, database, model, file_name,
    	 Json response to API with fileName, nodeCount, relationshipCount, processingTime, 
      status and model as attributes.
   """
-  # 🚀 STEP 1: Initialize comprehensive logging with custom metadata
-  process_logger.start_process(
-    file_name, 
-    model, 
-    "document_processing",
-    custom_metadata={
-      'token_chunk_size': token_chunk_size,
-      'chunk_overlap': chunk_overlap,
-      'chunks_to_combine': chunks_to_combine,
-      'allowed_nodes': allowedNodes,
-      'allowed_relationships': allowedRelationship,
-      'retry_condition': retry_condition,
-      'additional_instructions': additional_instructions is not None,
-      'is_uploaded_from_local': is_uploaded_from_local,
-      'database': database,
-      'uri': uri
-    }
-  )
+  # Simplified logging instead of complex process_logger calls
+  logging.info(f"Starting processing for file: {file_name} with model: {model}")
   
   uri_latency = {}
   response = {}  
@@ -371,24 +462,15 @@ async def processing_source(uri, userName, password, database, model, file_name,
   processing_source_start_time = time.time()
   
   # 🔗 STEP 2: Database Connection Setup
-  process_logger.log_step(
-    "DB_CONNECTION_START",
-    "Setting up Neo4j database connection",
-    {
-      'uri': uri,
-      'database': database,
-      'username': userName,
-      'file_name': file_name,
-      'model': model
-    }
-  )
+  logging.info(f"Setting up Neo4j database connection for file: {file_name}")
+  logging.info(f"Connection details - URI: {uri}, Database: {database}, Username: {userName}, Model: {model}")
   
   start_create_connection = time.time()
   graph = create_graph_database_connection(uri, userName, password, database)
   end_create_connection = time.time()
   elapsed_create_connection = end_create_connection - start_create_connection
   
-  process_logger.log_step(
+  safe_log_step(
     "DB_CONNECTION_COMPLETE",
     "Database connection established successfully",
     {
@@ -402,7 +484,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
   uri_latency["create_connection"] = f'{elapsed_create_connection:.2f}'
   
   # 📊 STEP 3: Initialize Data Access Layer
-  process_logger.log_step(
+  safe_log_step(
     "DATA_ACCESS_INIT",
     "Initializing graph database data access layer",
     {
@@ -414,7 +496,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
   graphDb_data_Access = graphDBdataAccess(graph)
   
   # 🔍 STEP 4: Create Vector Index
-  process_logger.log_step(
+  safe_log_step(
     "VECTOR_INDEX_CREATE",
     "Creating chunk vector index for similarity search",
     {
@@ -425,7 +507,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
   
   create_chunk_vector_index(graph)
   # 📄 STEP 5: Document Chunking Process
-  process_logger.log_step(
+  safe_log_step(
     "CHUNKING_START",
     "Starting document chunking process",
     {
@@ -442,7 +524,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
   end_get_chunkId_chunkDoc_list = time.time()
   elapsed_get_chunkId_chunkDoc_list = end_get_chunkId_chunkDoc_list - start_get_chunkId_chunkDoc_list
   
-  process_logger.log_data_flow(
+  safe_log_data_flow(
     "CHUNKING_COMPLETE",
     {
       'input_pages': len(pages) if pages else 0,
@@ -462,7 +544,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
   uri_latency["total_chunks"] = total_chunks
 
   # 📊 STEP 6: Document Status Check
-  process_logger.log_step(
+  safe_log_step(
     "STATUS_CHECK_START",
     "Checking current document processing status",
     {
@@ -476,7 +558,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
   end_status_document_node = time.time()
   elapsed_status_document_node = end_status_document_node - start_status_document_node
   
-  process_logger.log_step(
+  safe_log_step(
     "STATUS_CHECK_COMPLETE",
     "Document status retrieved successfully",
     {
@@ -490,6 +572,57 @@ async def processing_source(uri, userName, password, database, model, file_name,
   logging.info(f'Time taken to get the current status of document node: {elapsed_status_document_node:.2f} seconds')
   uri_latency["get_status_document_node"] = f'{elapsed_status_document_node:.2f}'
 
+  # 🔍 STEP 6.1: Check and Use Existing Schema Properties from Document
+  safe_log_step(
+    "SCHEMA_PROPERTIES_CHECK",
+    "Checking existing schema properties in document node",
+    {
+      'file_name': file_name,
+      'document_exists': len(result) > 0,
+      'schema_from_params': schema,
+      'additional_instructions_from_params': additional_instructions
+    }
+  )
+  
+  effective_schema = schema
+  effective_triplet = None
+  effective_additional_instructions = additional_instructions
+  
+  if len(result) > 0:
+    # Document exists, check for existing schema properties
+    existing_schema = result[0].get('schema')
+    existing_triplet = result[0].get('triplet') 
+    existing_additional_instructions = result[0].get('additional_instructions')
+    
+    # Use existing properties if they exist and are not None/empty
+    if existing_schema and str(existing_schema).strip() and str(existing_schema).lower() != 'none':
+      effective_schema = existing_schema
+      logging.info(f"✅ Using existing schema from document: {effective_schema}")
+      
+      # If schema exists in document, also use its triplet and additional_instructions
+      if existing_triplet and str(existing_triplet).strip() and str(existing_triplet).lower() != 'none':
+        effective_triplet = existing_triplet
+        logging.info(f"✅ Using existing triplet from document: {effective_triplet}")
+      
+      if existing_additional_instructions and str(existing_additional_instructions).strip():
+        effective_additional_instructions = existing_additional_instructions
+        logging.info(f"✅ Using existing additional_instructions from document (length: {len(effective_additional_instructions)} chars)")
+    else:
+      logging.info(f"⚠️ No valid schema found in document, using schema from interface: {effective_schema}")
+  else:
+    logging.info(f"⚠️ Document does not exist yet, using schema from interface: {effective_schema}")
+  
+  safe_log_step(
+    "SCHEMA_PROPERTIES_RESOLVED",
+    "Schema properties resolved successfully",
+    {
+      'effective_schema': effective_schema,
+      'effective_triplet': effective_triplet,
+      'effective_additional_instructions_length': len(effective_additional_instructions or ''),
+      'source': 'document' if len(result) > 0 and result[0].get('schema') else 'interface'
+    }
+  )
+
   select_chunks_with_retry=0
   node_count = 0
   rel_count = 0
@@ -497,7 +630,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
   if len(result) > 0:
     if result[0]['Status'] != 'Processing':
       # 🔄 STEP 7: Update Document Status to Processing
-      process_logger.log_step(
+      safe_log_step(
         "STATUS_UPDATE_START",
         "Updating document status to 'Processing'",
         {
@@ -514,13 +647,22 @@ async def processing_source(uri, userName, password, database, model, file_name,
       obj_source_node.status = status
       obj_source_node.total_chunks = total_chunks
       obj_source_node.model = model
-      obj_source_node.schema = schema
+      
+      # Use effective schema properties (either from document or interface)
+      obj_source_node.schema = effective_schema
+      obj_source_node.triplet = effective_triplet
+      obj_source_node.additional_instructions = effective_additional_instructions
+      
+      logging.info(f"🎯 Using schema properties for processing:")
+      logging.info(f"  - schema: {obj_source_node.schema}")
+      logging.info(f"  - triplet: {obj_source_node.triplet}")
+      logging.info(f"  - additional_instructions length: {len(obj_source_node.additional_instructions or '')} chars")
       if retry_condition == START_FROM_LAST_PROCESSED_POSITION:
           node_count = result[0]['nodeCount']
           rel_count = result[0]['relationshipCount']
           select_chunks_with_retry = result[0]['processed_chunk']
           
-          process_logger.log_step(
+          safe_log_step(
             "RETRY_RESUME_CONFIG",
             "Configuring retry from last processed position",
             {
@@ -540,7 +682,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       end_update_source_node = time.time()
       elapsed_update_source_node = end_update_source_node - start_update_source_node
       
-      process_logger.log_step(
+      safe_log_step(
         "STATUS_UPDATE_COMPLETE",
         "Document status updated successfully",
         {
@@ -557,7 +699,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       # 🔄 STEP 8: Batch Processing Configuration
       update_graph_chunk_processed = int(os.environ.get('UPDATE_GRAPH_CHUNKS_PROCESSED', '20'))
       
-      process_logger.log_step(
+      safe_log_step(
         "BATCH_PROCESSING_CONFIG",
         "Configuring batch processing parameters",
         {
@@ -573,7 +715,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       job_status = "Completed"
       
       # 🔄 STEP 9: Main Processing Loop
-      process_logger.log_step(
+      safe_log_step(
         "MAIN_PROCESSING_START",
         "Starting main chunk processing loop",
         {
@@ -585,7 +727,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       for i in range(0, len(chunkId_chunkDoc_list), update_graph_chunk_processed):
         select_chunks_upto = i+update_graph_chunk_processed
         
-        process_logger.log_step(
+        safe_log_step(
           f"BATCH_{i//update_graph_chunk_processed + 1}_START",
           f"Processing batch {i//update_graph_chunk_processed + 1}",
           {
@@ -604,7 +746,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
         result = graphDb_data_Access.get_current_status_document_node(file_name)
         is_cancelled_status = result[0]['is_cancelled']
         
-        process_logger.log_step(
+        safe_log_step(
           f"BATCH_{i//update_graph_chunk_processed + 1}_CANCELLATION_CHECK",
           "Checking for cancellation status",
           {
@@ -618,7 +760,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
         if bool(is_cancelled_status) == True:
           job_status = "Cancelled"
           
-          process_logger.log_step(
+          safe_log_step(
             "PROCESSING_CANCELLED",
             "Processing cancelled by user",
             {
@@ -634,7 +776,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
           break
         else:
           # 🔄 STEP 11: Process Current Batch
-          process_logger.log_step(
+          safe_log_step(
             f"BATCH_{i//update_graph_chunk_processed + 1}_PROCESSING",
             f"Processing chunks batch {i//update_graph_chunk_processed + 1}",
             {
@@ -647,11 +789,11 @@ async def processing_source(uri, userName, password, database, model, file_name,
           )
           
           processing_chunks_start_time = time.time()
-          node_count,rel_count,latency_processed_chunk = await processing_chunks(selected_chunks,graph,uri, userName, password, database,file_name,model,allowedNodes,allowedRelationship,chunks_to_combine,node_count, rel_count, additional_instructions)
+          node_count,rel_count,latency_processed_chunk = await processing_chunks(selected_chunks,graph,uri, userName, password, database,file_name,model,allowedNodes,allowedRelationship,chunks_to_combine,node_count, rel_count, effective_additional_instructions, effective_schema, effective_triplet)
           processing_chunks_end_time = time.time()
           processing_chunks_elapsed_end_time = processing_chunks_end_time - processing_chunks_start_time
           
-          process_logger.log_data_flow(
+          safe_log_data_flow(
             f"BATCH_{i//update_graph_chunk_processed + 1}_COMPLETE",
             {
               'input_chunks': len(selected_chunks),
@@ -673,7 +815,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
           end_time = datetime.now()
           processed_time = end_time - start_time
           
-          process_logger.log_step(
+          safe_log_step(
             f"BATCH_{i//update_graph_chunk_processed + 1}_PROGRESS_UPDATE",
             f"Updating progress after batch {i//update_graph_chunk_processed + 1}",
             {
@@ -708,7 +850,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
         if bool(is_cancelled_status) == True:
           job_status = 'Cancelled'
           
-          process_logger.log_step(
+          safe_log_step(
             "FINAL_STATUS_CANCELLED",
             "Final status check: Processing was cancelled",
             {
@@ -723,7 +865,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       else:
         logging.warning(f'No document node found during final status check for file: {file_name}')
         
-      process_logger.log_step(
+      safe_log_step(
         "PROCESSING_FINALIZATION",
         f"Finalizing processing with status: {job_status}",
         {
@@ -747,7 +889,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       graphDb_data_Access.update_source_node(obj_source_node)
       graphDb_data_Access.update_node_relationship_count(file_name)
       
-      process_logger.log_step(
+      safe_log_step(
         "FINAL_DB_UPDATE",
         "Final database update completed",
         {
@@ -767,7 +909,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       if is_uploaded_from_local:
         gcs_file_cache = os.environ.get('GCS_FILE_CACHE')
         
-        process_logger.log_step(
+        safe_log_step(
           "FILE_CLEANUP_START",
           "Starting file cleanup process",
           {
@@ -782,7 +924,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
           folder_name = create_gcs_bucket_folder_name_hashed(uri, file_name)
           delete_file_from_gcs(BUCKET_UPLOAD,folder_name,file_name)
           
-          process_logger.log_step(
+          safe_log_step(
             "GCS_FILE_DELETED",
             "File deleted from GCS bucket",
             {
@@ -794,7 +936,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
         else:
           delete_uploaded_local_file(merged_file_path, file_name)
           
-          process_logger.log_step(
+          safe_log_step(
             "LOCAL_FILE_DELETED",
             "File deleted from local storage",
             {
@@ -822,7 +964,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
       response["success_count"] = 1
       
       # 🏁 STEP 18: Complete Process Logging with Enhanced Analytics
-      final_stats = process_logger.end_process(
+      final_stats = safe_end_process(
         job_status,
         {
           'file_name': file_name,
@@ -842,17 +984,17 @@ async def processing_source(uri, userName, password, database, model, file_name,
       )
       
       # Log custom metrics for analysis
-      process_logger.log_custom_metric("nodes_created", node_count, "DOCUMENT_PROCESSING", {"model": model})
-      process_logger.log_custom_metric("relationships_created", rel_count, "DOCUMENT_PROCESSING", {"model": model})
-      process_logger.log_custom_metric("processing_duration", processed_time.total_seconds(), "DOCUMENT_PROCESSING", {"model": model})
+      safe_log_custom_metric("nodes_created", node_count, "DOCUMENT_PROCESSING", {"model": model})
+      safe_log_custom_metric("relationships_created", rel_count, "DOCUMENT_PROCESSING", {"model": model})
+      safe_log_custom_metric("processing_duration", processed_time.total_seconds(), "DOCUMENT_PROCESSING", {"model": model})
       
       # Log performance insights
-      insights = process_logger.get_process_insights()
+      insights = safe_get_process_insights()
       logging.info(f"📊 Process insights: {json.dumps(insights, indent=2)}")
       
       return uri_latency, response
     else:
-      process_logger.log_step(
+      safe_log_step(
         "DOCUMENT_ALREADY_PROCESSING",
         "Document is already being processed",
         {
@@ -869,7 +1011,7 @@ async def processing_source(uri, userName, password, database, model, file_name,
     # No document node found - log warning and continue processing
     logging.warning(f"No document node found for file: {file_name}. This might be a new file.")
     
-    process_logger.log_step(
+    safe_log_step(
       "DOCUMENT_NODE_NOT_FOUND",
       "Document node not found, proceeding with processing",
       {
@@ -883,12 +1025,12 @@ async def processing_source(uri, userName, password, database, model, file_name,
     # Continue with processing by setting default values
     job_status = 'New'
 
-async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password, database,file_name,model,allowedNodes,allowedRelationship, chunks_to_combine, node_count, rel_count, additional_instructions=None):
+async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password, database,file_name,model,allowedNodes,allowedRelationship, chunks_to_combine, node_count, rel_count, additional_instructions=None, schema=None, triplet=None):
   """
   Process chunks through LLM for entity extraction and relationship creation
   """
   # 🔄 STEP A: Initialize Chunk Processing
-  process_logger.log_step(
+  safe_log_step(
     "CHUNK_PROCESSING_START",
     "Starting chunk processing for entity extraction",
     {
@@ -908,7 +1050,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   # 🔗 STEP B: Database Connection Check
   if graph is not None:
     if graph._driver._closed:
-      process_logger.log_step(
+      safe_log_step(
         "DB_RECONNECTION",
         "Database connection was closed, reconnecting",
         {
@@ -919,7 +1061,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
       )
       graph = create_graph_database_connection(uri, userName, password, database)
   else:
-    process_logger.log_step(
+    safe_log_step(
       "DB_CONNECTION_INIT",
       "Initializing database connection for chunk processing",
       {
@@ -930,7 +1072,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
     graph = create_graph_database_connection(uri, userName, password, database)
   
   # 🔍 STEP C: Embedding Creation
-  process_logger.log_step(
+  safe_log_step(
     "EMBEDDING_CREATION_START",
     "Creating embeddings for chunks",
     {
@@ -945,7 +1087,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   end_update_embedding = time.time()
   elapsed_update_embedding = end_update_embedding - start_update_embedding
   
-  process_logger.log_step(
+  safe_log_step(
     "EMBEDDING_CREATION_COMPLETE",
     "Chunk embeddings created successfully",
     {
@@ -959,7 +1101,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   latency_processing_chunk["update_embedding"] = f'{elapsed_update_embedding:.2f}'
   
   # 🤖 STEP D: LLM Entity Extraction
-  process_logger.log_step(
+  safe_log_step(
     "ENTITY_EXTRACTION_START",
     "Starting entity extraction using LLM",
     {
@@ -975,13 +1117,13 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   logging.info("Get graph document list from models")
   
   start_entity_extraction = time.time()
-  graph_documents =  await get_graph_from_llm(model, chunkId_chunkDoc_list, allowedNodes, allowedRelationship, chunks_to_combine, additional_instructions)
+  graph_documents =  await get_graph_from_llm(model, chunkId_chunkDoc_list, allowedNodes, allowedRelationship, chunks_to_combine, additional_instructions, schema, triplet)
   end_entity_extraction = time.time()
   elapsed_entity_extraction = end_entity_extraction - start_entity_extraction
   
   # Check for performance bottlenecks
   if elapsed_entity_extraction > 60:  # More than 1 minute
-    process_logger.log_performance_bottleneck(
+    safe_log_performance_bottleneck(
       "ENTITY_EXTRACTION", 
       "SLOW_LLM_PROCESSING",
       {
@@ -993,7 +1135,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
       }
     )
   
-  process_logger.log_data_flow(
+  safe_log_data_flow(
     "ENTITY_EXTRACTION_COMPLETE",
     {
       'input_chunks': len(chunkId_chunkDoc_list),
@@ -1017,7 +1159,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   latency_processing_chunk["entity_extraction"] = f'{elapsed_entity_extraction:.2f}'
   
   # 🧹 STEP E: Data Cleaning
-  process_logger.log_step(
+  safe_log_step(
     "DATA_CLEANING_START",
     "Cleaning extracted graph documents",
     {
@@ -1028,7 +1170,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   
   cleaned_graph_documents = handle_backticks_nodes_relationship_id_type(graph_documents)
   
-  process_logger.log_step(
+  safe_log_step(
     "DATA_CLEANING_COMPLETE",
     "Graph documents cleaned successfully",
     {
@@ -1038,7 +1180,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   )
   
   # 💾 STEP F: Save to Neo4j
-  process_logger.log_step(
+  safe_log_step(
     "NEO4J_SAVE_START",
     "Saving graph documents to Neo4j database",
     {
@@ -1049,11 +1191,37 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   )
   
   start_save_graphDocuments = time.time()
-  save_graphDocuments_in_neo4j(graph, cleaned_graph_documents)
+  try:
+      safe_log_step(
+          "NEO4J_SAVE_START",
+          f"Starting to save {len(cleaned_graph_documents)} graph documents to Neo4j",
+          {"document_count": len(cleaned_graph_documents)}
+      )
+      save_graphDocuments_in_neo4j(graph, cleaned_graph_documents)
+      safe_log_step(
+          "NEO4J_SAVE_SUCCESS", 
+          "Graph documents saved to Neo4j successfully",
+          {"document_count": len(cleaned_graph_documents)}
+      )
+  except Exception as e:
+      safe_log_step(
+          "NEO4J_SAVE_ERROR",
+          f"Failed to save graph documents to Neo4j: {str(e)}",
+          {"error": str(e), "document_count": len(cleaned_graph_documents)}
+      )
+      # If it's a property size error, try to provide more helpful info
+      if "Property value is too large to index" in str(e):
+          safe_log_step(
+              "PROPERTY_SIZE_ERROR",
+              "Property size error detected - entity property too large for indexing",
+              {"error_type": "property_size", "suggestion": "Check entity property lengths"}
+          )
+      raise
+  
   end_save_graphDocuments = time.time()
   elapsed_save_graphDocuments = end_save_graphDocuments - start_save_graphDocuments
   
-  process_logger.log_step(
+  safe_log_step(
     "NEO4J_SAVE_COMPLETE",
     "Graph documents saved to Neo4j successfully",
     {
@@ -1067,7 +1235,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   latency_processing_chunk["save_graphDocuments"] = f'{elapsed_save_graphDocuments:.2f}'
 
   # 🔗 STEP G: Chunk-Entity Relationship Creation
-  process_logger.log_step(
+  safe_log_step(
     "CHUNK_ENTITY_MAPPING_START",
     "Creating chunk-entity mapping",
     {
@@ -1079,7 +1247,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   
   chunks_and_graphDocuments_list = get_chunk_and_graphDocument(cleaned_graph_documents, chunkId_chunkDoc_list)
   
-  process_logger.log_step(
+  safe_log_step(
     "CHUNK_ENTITY_RELATIONSHIP_START",
     "Creating relationships between chunks and entities",
     {
@@ -1093,7 +1261,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   end_relationship = time.time()
   elapsed_relationship = end_relationship - start_relationship
   
-  process_logger.log_step(
+  safe_log_step(
     "CHUNK_ENTITY_RELATIONSHIP_COMPLETE",
     "Chunk-entity relationships created successfully",
     {
@@ -1107,7 +1275,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   latency_processing_chunk["relationship_between_chunk_entity"] = f'{elapsed_relationship:.2f}'
   
   # 📊 STEP H: Count Updates
-  process_logger.log_step(
+  safe_log_step(
     "COUNT_UPDATE_START",
     "Updating node and relationship counts",
     {
@@ -1121,7 +1289,7 @@ async def processing_chunks(chunkId_chunkDoc_list,graph,uri, userName, password,
   node_count = count_response[file_name].get('nodeCount',"0")
   rel_count = count_response[file_name].get('relationshipCount',"0")
   
-  process_logger.log_step(
+  safe_log_step(
     "CHUNK_PROCESSING_COMPLETE",
     "Chunk processing completed successfully",
     {
@@ -1242,7 +1410,16 @@ def merge_chunks_local(file_name, total_chunks, chunk_dir, merged_dir):
   
 
 
-def upload_file(graph, model, chunk, chunk_number:int, total_chunks:int, originalname, uri, chunk_dir, merged_dir):
+def upload_file(graph, model, chunk, chunk_number:int, total_chunks:int, originalname, uri, chunk_dir, merged_dir, course_code=None, folder_name=None):
+  
+  # Enhanced debug logging
+  logging.info(f"🔍 upload_file called with parameters:")
+  logging.info(f"  - originalname: {originalname}")
+  logging.info(f"  - chunk_number: {chunk_number}")
+  logging.info(f"  - total_chunks: {total_chunks}")
+  logging.info(f"  - course_code: {course_code} (type: {type(course_code)})")
+  logging.info(f"  - folder_name: {folder_name} (type: {type(folder_name)})")
+  logging.info(f"  - model: {model}")
   
   gcs_file_cache = os.environ.get('GCS_FILE_CACHE')
   logging.info(f'gcs file cache: {gcs_file_cache}')
@@ -1282,6 +1459,60 @@ def upload_file(graph, model, chunk, chunk_number:int, total_chunks:int, origina
       obj_source_node.entityEntityRelCount=0
       obj_source_node.communityNodeCount=0
       obj_source_node.communityRelCount=0
+      
+      # Enhanced debug logging for course_code and folder_name
+      logging.info(f"🔍 Before creating sourceNode object:")
+      logging.info(f"  - Received course_code: {course_code} (type: {type(course_code)})")
+      logging.info(f"  - Received folder_name: {folder_name} (type: {type(folder_name)})")
+      
+      # Set course_code and folder_name if provided - with more robust checking
+      if course_code is not None and str(course_code).strip() != '' and str(course_code).lower() != 'none':
+          obj_source_node.course_code = str(course_code).strip()
+          logging.info(f"✅ Set course_code to: {obj_source_node.course_code}")
+      else:
+          obj_source_node.course_code = None
+          logging.info(f"❌ course_code is None or empty: {course_code}")
+          
+      if folder_name is not None and str(folder_name).strip() != '' and str(folder_name).lower() != 'none':
+          obj_source_node.folder_name = str(folder_name).strip()
+          logging.info(f"✅ Set folder_name to: {obj_source_node.folder_name}")
+      else:
+          obj_source_node.folder_name = None
+          logging.info(f"❌ folder_name is None or empty: {folder_name}")
+      
+      # Auto-detect schema, triplet, and additional_instructions based on folder_name
+      if obj_source_node.folder_name:
+          schema_info = get_schema_info_from_folder_name(obj_source_node.folder_name)
+          
+          obj_source_node.schema = schema_info['schema']
+          obj_source_node.triplet = schema_info['triplet']
+          
+          # Load additional instructions from file
+          if schema_info.get('additional_instructions_file'):
+              obj_source_node.additional_instructions = load_additional_instructions(
+                  schema_info['additional_instructions_file']
+              )
+          else:
+              obj_source_node.additional_instructions = ''
+              
+          logging.info(f"🎯 Auto-detected schema info:")
+          logging.info(f"  - schema: {obj_source_node.schema}")
+          logging.info(f"  - triplet: {obj_source_node.triplet}")
+          logging.info(f"  - additional_instructions length: {len(obj_source_node.additional_instructions)} chars")
+      else:
+          # Default values when no folder_name
+          obj_source_node.schema = 'default'
+          obj_source_node.triplet = 'default'
+          obj_source_node.additional_instructions = ''
+          logging.info("⚠️ No folder_name, using default schema values")
+      
+      logging.info(f"🔍 Final sourceNode object values:")
+      logging.info(f"  - obj_source_node.course_code: {obj_source_node.course_code}")
+      logging.info(f"  - obj_source_node.folder_name: {obj_source_node.folder_name}")
+      logging.info(f"  - obj_source_node.schema: {obj_source_node.schema}")
+      logging.info(f"  - obj_source_node.triplet: {obj_source_node.triplet}")
+      logging.info(f"  - obj_source_node.additional_instructions: {obj_source_node.additional_instructions[:100]}..." if obj_source_node.additional_instructions else "  - obj_source_node.additional_instructions: None")
+      
       graphDb_data_Access = graphDBdataAccess(graph)
         
       graphDb_data_Access.create_source_node(obj_source_node)

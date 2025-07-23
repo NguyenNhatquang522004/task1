@@ -36,6 +36,8 @@ export interface CustomFileBase extends Partial<globalThis.File> {
   communityNodeCount: number;
   communityRelCount: number;
   createdAt?: Date;
+  courseCode?: string;
+  folderName?: string;
 }
 export interface CustomFile extends CustomFileBase {
   id: string;
@@ -94,6 +96,8 @@ export type UploadParams = {
   chunkNumber: number;
   totalChunks: number;
   originalname: string;
+  course_code?: string;
+  folder_name?: string;
 } & { [key: string]: any };
 
 export type FormDataParams = ExtractParams | UploadParams;

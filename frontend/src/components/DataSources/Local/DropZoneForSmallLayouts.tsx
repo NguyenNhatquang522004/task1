@@ -9,15 +9,18 @@ import { uploadAPI } from '../../../utils/FileAPI';
 import { v4 as uuidv4 } from 'uuid';
 import { LoadingSpinner } from '@neo4j-ndl/react';
 import { showErrorToast, showSuccessToast } from '../../../utils/Toasts';
+import FolderSelectionModal from './FolderSelectionModal';
 
 export default function DropZoneForSmallLayouts() {
   const { filesData, setFilesData, model } = useFileContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isClicked, setIsClicked] = useState<boolean>(false);
-  const { userCredentials, connectionStatus, isReadOnlyUser } = useCredentials();
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const { connectionStatus, isReadOnlyUser } = useCredentials();
+  const [showFolderModal, setShowFolderModal] = useState<boolean>(false);
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
+  const [uploadQueue, setUploadQueue] = useState<Array<{file: File, course_code: string, folder_name: string}>>([]);
 
-  const uploadFileInChunks = (file: File) => {
+  const uploadFileInChunks = (file: File, course_code?: string, folder_name?: string) => {
     const totalChunks = Math.ceil(file.size / chunkSize);
     const chunkProgressIncrement = 100 / totalChunks;
     let chunkNumber = 1;
@@ -32,9 +35,9 @@ export default function DropZoneForSmallLayouts() {
         formData.append('totalChunks', totalChunks.toString());
         formData.append('originalname', file.name);
         formData.append('model', model);
-        for (const key in userCredentials) {
-          formData.append(key, userCredentials[key]);
-        }
+        
+        // Credentials are now handled in uploadAPI function
+        
         setIsLoading(true);
         setFilesData((prevfiles) =>
           prevfiles.map((curfile) => {
@@ -48,7 +51,7 @@ export default function DropZoneForSmallLayouts() {
           })
         );
         try {
-          const apiResponse = await uploadAPI(chunk, model, chunkNumber, totalChunks, file.name);
+          const apiResponse = await uploadAPI(chunk, model, chunkNumber, totalChunks, file.name, course_code, folder_name);
           if (apiResponse?.status === 'Failed') {
             throw new Error(`message:${apiResponse.data.message},fileName:${apiResponse.data.file_name}`);
           } else {
@@ -149,10 +152,25 @@ export default function DropZoneForSmallLayouts() {
   });
 
   const onDropHandler = (f: Partial<globalThis.File>[]) => {
-    setIsClicked(true);
-    setSelectedFiles(f.map((f) => f as File));
-    setIsLoading(false);
-    if (f.length) {
+    if (f.length > 0) {
+      // Open folder selection modal for the first file
+      const firstFile = f[0] as File;
+      setCurrentFile(firstFile);
+      setShowFolderModal(true);
+    }
+  };
+
+  const handleFolderSelection = (course_code: string, folder_name: string) => {
+    if (currentFile) {
+      // Add file to upload queue with folder info
+      const fileWithMetadata = {
+        file: currentFile,
+        course_code,
+        folder_name
+      };
+      setUploadQueue([fileWithMetadata]);
+      
+      // Initialize file data
       const defaultValues: CustomFileBase = {
         processingTotalTime: 0,
         status: 'None',
@@ -174,53 +192,63 @@ export default function DropZoneForSmallLayouts() {
       };
 
       const copiedFilesData: CustomFile[] = [...filesData];
-      for (let index = 0; index < f.length; index++) {
-        const file = f[index];
-        const filedataIndex = copiedFilesData.findIndex((filedataitem) => filedataitem?.name === file?.name);
-        if (filedataIndex == -1) {
-          copiedFilesData.unshift({
-            name: file.name,
-            // @ts-ignore
-            type: `${file.name.substring(file.name.lastIndexOf('.') + 1, file.name.length).toUpperCase()}`,
-            size: file.size,
-            uploadProgress: file.size && file?.size < chunkSize ? 100 : 0,
-            id: uuidv4(),
-            ...defaultValues,
-          });
-        } else {
-          const tempFileData = copiedFilesData[filedataIndex];
-          copiedFilesData.splice(filedataIndex, 1);
-          copiedFilesData.unshift({
-            ...tempFileData,
-            status: defaultValues.status,
-            nodesCount: defaultValues.nodesCount,
-            relationshipsCount: defaultValues.relationshipsCount,
-            processingTotalTime: defaultValues.processingTotalTime,
-            model: defaultValues.model,
-            fileSource: defaultValues.fileSource,
-            processingProgress: defaultValues.processingProgress,
-          });
-        }
+      const file = currentFile;
+      const filedataIndex = copiedFilesData.findIndex((filedataitem) => filedataitem?.name === file?.name);
+      
+      if (filedataIndex == -1) {
+        copiedFilesData.unshift({
+          name: file.name,
+          type: `${file.name.substring(file.name.lastIndexOf('.') + 1, file.name.length).toUpperCase()}`,
+          size: file.size,
+          uploadProgress: file.size && file?.size < chunkSize ? 100 : 0,
+          id: uuidv4(),
+          ...defaultValues,
+        });
+      } else {
+        const tempFileData = copiedFilesData[filedataIndex];
+        copiedFilesData.splice(filedataIndex, 1);
+        copiedFilesData.unshift({
+          ...tempFileData,
+          status: defaultValues.status,
+          nodesCount: defaultValues.nodesCount,
+          relationshipsCount: defaultValues.relationshipsCount,
+          processingTotalTime: defaultValues.processingTotalTime,
+          model: defaultValues.model,
+          fileSource: defaultValues.fileSource,
+          processingProgress: defaultValues.processingProgress,
+        });
       }
+      
       setFilesData(copiedFilesData);
+      setIsClicked(true);
     }
   };
+  
   useEffect(() => {
-    if (selectedFiles.length > 0) {
-      for (let index = 0; index < selectedFiles.length; index++) {
-        const file = selectedFiles[index];
-        if (filesData[index]?.status == 'None' && isClicked) {
-          uploadFileInChunks(file);
+    if (uploadQueue.length > 0) {
+      for (let index = 0; index < uploadQueue.length; index++) {
+        const { file, course_code, folder_name } = uploadQueue[index];
+        const fileData = filesData.find(f => f.name === file.name);
+        if (fileData?.status == 'None' && isClicked) {
+          uploadFileInChunks(file, course_code, folder_name);
         }
       }
     }
-  }, [selectedFiles]);
+  }, [uploadQueue, filesData, isClicked]);
+
   return (
     <>
       <div {...getRootProps({ className: 'dropzone' })}>
         <input {...getInputProps()} aria-label='dropzone' disabled={isReadOnlyUser || !connectionStatus} />
         {isLoading ? <LoadingSpinner size='medium' /> : <DocumentPlusIconSolid className='n-size-token-7' />}
       </div>
+      
+      <FolderSelectionModal
+        isOpen={showFolderModal}
+        onClose={() => setShowFolderModal(false)}
+        onConfirm={handleFolderSelection}
+        fileName={currentFile?.name || ''}
+      />
     </>
   );
 }

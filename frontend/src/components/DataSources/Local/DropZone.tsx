@@ -2,7 +2,6 @@ import { Dropzone, Flex, SpotlightTarget, Typography } from '@neo4j-ndl/react';
 import { useState, FunctionComponent, useEffect } from 'react';
 import Loader from '../../../utils/Loader';
 import { v4 as uuidv4 } from 'uuid';
-import { useCredentials } from '../../../context/UserCredentials';
 import { useFileContext } from '../../../context/UsersFiles';
 import { CustomFile, CustomFileBase } from '../../../types';
 import { buttonCaptions, chunkSize } from '../../../utils/Constants';
@@ -10,18 +9,38 @@ import { InformationCircleIconOutline } from '@neo4j-ndl/react/icons';
 import { IconButtonWithToolTip } from '../../UI/IconButtonToolTip';
 import { uploadAPI } from '../../../utils/FileAPI';
 import { showErrorToast, showSuccessToast } from '../../../utils/Toasts';
+import FolderSelectionModal from './FolderSelectionModal';
 
 const DropZone: FunctionComponent = () => {
   const { filesData, setFilesData, model } = useFileContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isClicked, setIsClicked] = useState<boolean>(false);
-  const { userCredentials } = useCredentials();
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [showFolderModal, setShowFolderModal] = useState<boolean>(false);
+  const [currentFiles, setCurrentFiles] = useState<File[]>([]);
+  const [uploadQueue, setUploadQueue] = useState<Array<{file: File, course_code: string, folder_name: string}>>([]);
+
   const onDropHandler = (f: Partial<globalThis.File>[]) => {
-    setIsClicked(true);
-    setSelectedFiles(f.map((f) => f as File));
-    setIsLoading(false);
-    if (f.length) {
+    if (f.length > 0) {
+      // Open folder selection modal for the files
+      const files = f.map((f) => f as File);
+      setCurrentFiles(files);
+      setShowFolderModal(true);
+    }
+  };
+
+  const handleFolderSelection = (course_code: string, folder_name: string) => {
+    if (currentFiles.length > 0) {
+      setIsClicked(true);
+      setIsLoading(false);
+      
+      // Add files to upload queue with folder info
+      const filesWithMetadata = currentFiles.map(file => ({
+        file,
+        course_code,
+        folder_name
+      }));
+      setUploadQueue(filesWithMetadata);
+      
       const defaultValues: CustomFileBase = {
         processingTotalTime: 0,
         status: 'None',
@@ -43,8 +62,8 @@ const DropZone: FunctionComponent = () => {
       };
 
       const copiedFilesData: CustomFile[] = [...filesData];
-      for (let index = 0; index < f.length; index++) {
-        const file = f[index];
+      for (let index = 0; index < currentFiles.length; index++) {
+        const file = currentFiles[index];
         const filedataIndex = copiedFilesData.findIndex((filedataitem) => filedataitem?.name === file?.name);
         if (filedataIndex == -1) {
           copiedFilesData.unshift({
@@ -72,20 +91,23 @@ const DropZone: FunctionComponent = () => {
         }
       }
       setFilesData(copiedFilesData);
+      setShowFolderModal(false);
     }
   };
+  
   useEffect(() => {
-    if (selectedFiles.length > 0) {
-      for (let index = 0; index < selectedFiles.length; index++) {
-        const file = selectedFiles[index];
-        if (filesData[index]?.status == 'None' && isClicked) {
-          uploadFileInChunks(file);
+    if (uploadQueue.length > 0) {
+      for (let index = 0; index < uploadQueue.length; index++) {
+        const { file, course_code, folder_name } = uploadQueue[index];
+        const fileData = filesData.find(f => f.name === file.name);
+        if (fileData?.status == 'None' && isClicked) {
+          uploadFileInChunks(file, course_code, folder_name);
         }
       }
     }
-  }, [selectedFiles]);
+  }, [uploadQueue, filesData, isClicked]);
 
-  const uploadFileInChunks = (file: File) => {
+  const uploadFileInChunks = (file: File, course_code?: string, folder_name?: string) => {
     const totalChunks = Math.ceil(file.size / chunkSize);
     const chunkProgressIncrement = 100 / totalChunks;
     let chunkNumber = 1;
@@ -100,9 +122,9 @@ const DropZone: FunctionComponent = () => {
         formData.append('totalChunks', totalChunks.toString());
         formData.append('originalname', file.name);
         formData.append('model', model);
-        for (const key in userCredentials) {
-          formData.append(key, userCredentials[key]);
-        }
+        
+        // Credentials are now handled in uploadAPI function
+        
         setIsLoading(true);
         setFilesData((prevfiles) =>
           prevfiles.map((curfile) => {
@@ -116,7 +138,7 @@ const DropZone: FunctionComponent = () => {
           })
         );
         try {
-          const apiResponse = await uploadAPI(chunk, model, chunkNumber, totalChunks, file.name);
+          const apiResponse = await uploadAPI(chunk, model, chunkNumber, totalChunks, file.name, course_code, folder_name);
           if (apiResponse?.status === 'Failed') {
             throw new Error(`message:${apiResponse.data.message},fileName:${apiResponse.data.file_name}`);
           } else {
@@ -255,6 +277,13 @@ const DropZone: FunctionComponent = () => {
           }}
         />
       </SpotlightTarget>
+      
+      <FolderSelectionModal
+        isOpen={showFolderModal}
+        onClose={() => setShowFolderModal(false)}
+        onConfirm={handleFolderSelection}
+        fileName={currentFiles.length > 0 ? `${currentFiles.length} file(s)` : ''}
+      />
     </>
   );
 };
